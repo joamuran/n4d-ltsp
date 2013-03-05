@@ -1,0 +1,20 @@
+Format-Specification: http://wiki.debian.org/Proposals/CopyrightFormat?action=recall&rev=143
+Upstream-Name: n4d-ltsp
+Upstream-Source: http://lliurex.net
+ 
+Files: *
+Copyright: Copyright 2008 Angel Berlanas Vicente <angel.berlanas@gmail.com>
+License: CC by-sa
+ 
+License: CC by-sa
+
+ You are free:
+  to Share — to copy, distribute and transmit the work
+  to Remix — to adapt the work
+
+Under the following conditions:
+
+ Attribution — You must attribute the work in the manner specified by the author or licensor 
+           (but not in any way that suggests that they endorse you or your use of the work).
+ Share Alike — If you alter, transform, or build upon this work, you may distribute 
+            the resulting work only under the same or similar license to this one.

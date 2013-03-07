@@ -46,10 +46,20 @@ class LtspChroot:
     besides, it seems like a chroot.
     '''
     if not os.path.isdir(chroot_dir):
-      return {'status': True, 'msg':'[N4dChroot] Test 1: Directory not existent'}
+      return {'status': True, 'msg':'[N4dChroot] Directory not existent'}
 
-  #def test_chroot(self, chroot_dir):
-
+  #def test_chroot(self, chroot_dir)
+ 
+  def get_lliurex_version_on_chroot(self, chroot_dir):
+    '''
+    get the LliureX Version of chroot given.
+    '''
+    if not self.test_chroot(chroot_dir)["status"]:
+      return {'status': True, 'msg':'[N4dChroot] Directory not existent'}
+    else :
+      
+	
+  #def get_lliurex_version_on_chroot(self, chroot_dir):
 
 #class LtspChroot
 

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# If error exists...exit 
+set -e
+
+# N4D module must be enabled to make more easier 
+# the installation process
+n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp.conf 
+
+#DEBHELPER#
+
+exit 0

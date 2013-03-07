@@ -54,10 +54,14 @@ class LtspChroot:
     '''
     get the LliureX Version of chroot given.
     '''
-    if not self.test_chroot(chroot_dir)["status"]:
-      return {'status': True, 'msg':'[N4dChroot] Directory not existent'}
+    if not self.test_chroot(chroot_dir)["status"] :
+      # If not a directory...you can't do nothing more.
+      return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
+
     else :
-      
+      # Ok, this is a directory. 
+      lliurex_version=subprocess.check_output(["chroot",chroot_dir,"lliurex-version"])
+      return {'status': True, 'msg':'[N4dChroot] Directory not existent' }     
 	
   #def get_lliurex_version_on_chroot(self, chroot_dir):
 

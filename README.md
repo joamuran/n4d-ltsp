@@ -1,4 +1,4 @@
-Python Library Documentation: class LtspChroot in module Pikachu
+Python Library Documentation: class LtspChroot in module LtspChroot #AKA Pikachu
 
 ## class __LtspChroot__
 ****************************************

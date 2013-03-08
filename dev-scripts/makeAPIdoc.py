@@ -16,7 +16,7 @@ import os
 pydoc.text = markdowndoc.MarkdownDoc()
 
 
-def load_clas_from_file(path):
+def load_class_from_file(path):
   class_inst = None
   expected_class = 'LtspChroot'
   mod_name,file_ext = os.path.splitext(os.path.split(path)[-1])
@@ -40,5 +40,5 @@ def writeMarkdownAPI():
     f.close()
 
 if __name__ == "__main__":
-  load_clas_from_file(sys.argv[1]) 
+  load_class_from_file(sys.argv[1]) 
   writeMarkdownAPI()

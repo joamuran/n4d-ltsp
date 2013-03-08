@@ -9,6 +9,7 @@ import pydoc
 import imp
 import sys
 import os
+
 # Is possible that you want change this object
 # import potools
 
@@ -18,10 +19,10 @@ pydoc.text = markdowndoc.MarkdownDoc()
 def load_clas_from_file(path):
   class_inst = None
   expected_class = 'LtspChroot'
-  mod_name,file_ext = os.path.splitext(os.path.split(filepath)[-1])
+  mod_name,file_ext = os.path.splitext(os.path.split(path)[-1])
   
   if file_ext.lower() == '.py':
-    py_mod = imp.load_source(mod_name, filepath)
+    py_mod = imp.load_source(mod_name, path)
 
   if hasattr (py_mod, expected_class):
     class_inst = py_mod.LtspChroot()

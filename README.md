@@ -1,11 +1,14 @@
 Python Library Documentation: class LtspChroot in module LtspChroot #AKA Pikachu
 
 ## class __LtspChroot__
+
 ****************************************
 
 ### __methods__
+
 ****************************************
-#### def __\__init__\__(self):
+
+#### def ____init____(__self__):
 
 A simple init method
 

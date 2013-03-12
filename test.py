@@ -28,7 +28,7 @@ except Exception as e:
 
 
 user_info=(user,password)
-print ("[DEBUG] :: " + (str)user_info)
+print ("[DEBUG] :: " + str(user_info))
 server = ServerProxy ("https://localhost:9779") # Conexion con el servidor. Por defecto siempre escucha en el puerto 9779
 
 #print (server.get_lliurex_version_on_chroot(user_info,"LtspChroot","/graveyard/"))

@@ -16,12 +16,14 @@ password="password"
 try:
 
   # Get the user
-  if (sys.argv[0]): 
-    user=sys.argv[0]
+  if (sys.argv[1]):
+    user=sys.argv[1]
+    print("[DEBUG] :: Ok, you give me a user as : "+user) 
 
   # Get the password
-  if (sys.argv[1]):
-    password = sys.argv[1]
+  if (sys.argv[2]):
+    password = sys.argv[2]
+    print("[DEBUG] :: ... and also a password...oh! it's fine  : "+password) 
 
 except Exception as e:
   print("Exception is ocurred, default user password is set")

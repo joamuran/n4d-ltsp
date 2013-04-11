@@ -1,3 +1,9 @@
+n4d-ltsp (0.1.1) precise; urgency=low
+
+  * Added functions and testing with LTSP
+
+ -- Angel Berlanas Vicente <angel.berlanas@gmail.com>  Thu, 11 Apr 2013 12:03:35 +0200
+
 n4d-ltsp (0.1) precise; urgency=low
 
   * First Version of n4d-ltsp

@@ -1,9 +1,10 @@
 #!/usr/bin/python
 # This script is licensed under GPL v3 or higher
 #
-# Author: Angel Berlanas Vicente 
-#         <angel.berlanas@gmail.com>
-#
+# Authors: Angel Berlanas Vicente 
+#         		<angel.berlanas@gmail.com>
+#				Jose Alfredo Murcia Andres
+#				<joamuran@gmail.com>
 #
 
 # Libraries
@@ -13,10 +14,10 @@ import subprocess
 class LtspChroot:
 
 	def __init__(self):
-	'''
-	A simple init method
-	'''
-	pass    
+		'''
+		A simple init method
+		'''
+		pass    
 	#def init
 
 	def startup(self,options):
@@ -38,7 +39,7 @@ class LtspChroot:
 		Show basic info about this plugin.
 		'''
 		return {'status':True, 'msg':'[N4dChroot] Info'}
-	  #def info 
+	#def info 
 
 	def test_chroot(self, chroot_dir):
 		'''
@@ -87,6 +88,8 @@ class LtspChroot:
 			# Mount /dev/pts
 			ret=subprocess.check_output(["mount","-o","bind","/dev/pts",chroot_dir+"/dev/pts"])
 			
+			return {'status': True, 'msg':'[N4dChroot] All is mounted'}
+			
 	#def prepare_chroot_for_run(self,chroot)
 		
 	def umount_chroot(self,chroot_dir):
@@ -109,7 +112,8 @@ class LtspChroot:
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
 			# Mount /dev/pts
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev/pts"])
-	
+			
+			return {'status': True, 'msg':'[N4dChroot] All is umounted'}
 	#def umount_chroot(self,chroot_dir)
 
 	def prepare_X11_applications(self,chroot_dir):
@@ -118,7 +122,7 @@ class LtspChroot:
 		into a chroot
 		'''
 		try:
-			subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
+			subprocess.check_output(["xhost",])
 		except Exception as e:
 			return {'status': False, 'msg':'[N4dChroot] '+str(e)}
 	
@@ -127,7 +131,7 @@ class LtspChroot:
 	def run_command_on_chroot(self,chroot_dir,command):
 		'''
 		Possible commands:
-			* gedit
+			* x-editor
 			* synaptic
 			* terminal
 		'''
@@ -137,15 +141,14 @@ class LtspChroot:
 		
 		else: 
 			
-					# First prepare chroot
-					self.prepare_chroot_for_run(chroot_dir)
-	
-					ret=
-		
-		
-					# At last leave chroot gracefully
-					self.umount_chroot(chroot_dir)
+			# First prepare chroot
+			self.prepare_chroot_for_run(chroot_dir)
+
+			# TODO
 			
+			# At last leave chroot gracefully
+			self.umount_chroot(chroot_dir)
+	
 		
 	#def run_command_on_chroot(self,chroot_dir,command)
 

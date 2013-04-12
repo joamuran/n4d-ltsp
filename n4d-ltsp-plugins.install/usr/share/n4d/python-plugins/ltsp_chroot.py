@@ -68,7 +68,7 @@ class LtspChroot:
 				return {'status': True, 'msg':'[N4dChroot] '+lliurex_version }     
 				
 		except Exception as e:
-			print e
+			print(str(e))
 		#def get_lliurex_version_on_chroot(self, chroot_dir):
 
 	def prepare_chroot_for_run(self,chroot_dir):

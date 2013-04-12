@@ -1,3 +1,18 @@
+n4d-ltsp (0.1.5) precise; urgency=low
+
+  * Updated dependences 
+
+ -- Angel Berlanas Vicente <angel.berlanas@gmail.com>  Fri, 12 Apr 2013 13:06:29 +0200
+
+n4d-ltsp (0.1.4) precise; urgency=low
+
+  * Updated control.
+  * Added new plugin to build some lliurex-flavours.
+  * New configuration file for n4d.
+  * Fixed postinst to solve the n4d-stopped braindamage situation
+
+ -- Angel Berlanas Vicente <angel.berlanas@gmail.com>  Fri, 12 Apr 2013 11:44:58 +0200
+
 n4d-ltsp (0.1.3.svn3317) precise; urgency=low
 
   * Fixed build-depends

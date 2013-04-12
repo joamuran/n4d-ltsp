@@ -30,9 +30,10 @@ into a chroot
 
 Prepare chroot to run commands
 mounting some directories:
-        * /proc/
-        * /sys/
-        *
+* /proc/
+* /sys/
+* /dev/
+* /dev/pts/ 
 
 #### def __run_command_on_chroot__(self, chroot_dir, command):
 

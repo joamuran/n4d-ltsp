@@ -1,0 +1,7 @@
+[SETUP]
+type=python
+path=ltsp_clipboard.py
+class=LTSPClipboard
+[METHODS]
+getClipboard=anonymous
+setClipboard=anonymous

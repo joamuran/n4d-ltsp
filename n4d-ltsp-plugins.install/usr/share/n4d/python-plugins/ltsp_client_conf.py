@@ -8,7 +8,7 @@ import re
 class Client:
   def __init__(self, mac):
     self.mac=mac
-    self.type="fat"
+    self.fat="true"
     self.desc=""
     self.name=""
     self.session="gnome"
@@ -17,7 +17,7 @@ class Client:
     self.username=""
     self.userpass=""
   def set_type(self, clienttype):
-    self.type=clienttype
+    self.fat=clienttype
   def set_name(self, name):
     self.name=name
   def set_desc(self, desc):
@@ -35,7 +35,7 @@ class Client:
   def get_client(self):
     client='{'
     client=client + '"mac":"'+self.mac+'"'
-    client=client + ',"type":"'+self.type+'"'
+    client=client + ',"fat":"'+self.fat+'"'
     client=client + ',"name":"'+self.name+'"'
     client=client + ',"desc":"'+self.desc+'"'
     client=client + ',"session":"'+self.session+'"'
@@ -66,6 +66,7 @@ class LtspClientConfig:
     '''
     self.current_section=""
     self.current_client=None
+    self.client_list=[]
 
     lines=open(self.conf_file, 'r').readlines();
     for line in lines:
@@ -129,14 +130,17 @@ class LtspClientConfig:
       index=index+1
       if index<len(self.client_list):
         config=config+','
-    config=config+']'
+    config=config+']}'
      
     return config 
     
   
   def set_ltsp_conf(self, config):
+    print "*************"
+    print config
+    print "*************"
     pass
   
-client=LtspClientConfig()
-conf=client.get_ltsp_conf()
-print conf
+#client=LtspClientConfig()
+#conf=client.get_ltsp_conf()
+#print conf

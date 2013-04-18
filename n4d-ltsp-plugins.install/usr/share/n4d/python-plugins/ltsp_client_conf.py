@@ -110,10 +110,18 @@ class LtspClientConfig:
               self.current_client.set_name(urllib.quote(line[9:]))
               #print "host: "+line[9:]
             if line[:8]=="LDM_SESS":
-              self.current_client.set_session(urllib.quote(line[12:]))
+              #print "SESSION: "+line[13:18].strip()
+              if line[13:18]=="gnome":
+                self.current_client.set_session("gnome")
+              else:
+                self.current_client.set_session("lxde")
               #print "session: "+line[12:]
             if line[:8]=="LDM_AUTO":
-              self.current_client.set_autologin(urllib.quote(line[14:]))
+              #print "Autologin: "+line[14:]
+              if line[14:].strip()=="True":
+                self.current_client.set_autologin("checked")
+              else:
+                  self.current_client.set_autologin("unchecked")
               #print "Autologin: "+line[14:]
             if line[:8]=="LDM_USER":
               self.current_client.set_username(urllib.quote(line[13:]))
@@ -126,7 +134,7 @@ class LtspClientConfig:
             #print self.current_section+"> "+line
       else: ##if len(line)>0 and line[0]!="#":
         if len(line)>0 and line[:8]=="#LLX-Des":
-          self.current_client.set_desc(urllib.quote(line[12:]))
+          self.current_client.set_desc(urllib.quote(line[10:]))
 
     # END for line in lines:
     if self.current_client is not None:
@@ -148,6 +156,7 @@ class LtspClientConfig:
     
   
   def set_ltsp_conf(self, config):
+    print "Going to save..."+config
     self.new_conf_file="/var/lib/tftpboot/ltsp/lts.conf"
     self.template_file="/var/lib/lliurex-ltsp/templates/lts.conf"
     readlines=open(self.template_file, 'r').readlines();
@@ -165,7 +174,7 @@ class LtspClientConfig:
       if client["fat"]!="":
         writefile.write("\nLTSP_FATCLIENT="+client["fat"])
       if client["session"]=="gnome":
-        writefile.write('\nLDM_SESSION="gnome-fallback"')
+        writefile.write('\nLDM_SESSION="gnome-session-fallback"')
       elif client["session"]=="lxde":
         writefile.write('\nLDM_SESSION=/usr/bin/startlxde')
       # ignoring monitor

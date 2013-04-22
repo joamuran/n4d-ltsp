@@ -105,7 +105,7 @@ class N4dRemoteLog:
     logging.basicConfig(
         format='%(relativeCreated)5d %(name)-15s %(levelname)-8s %(message)s')
     tcpserver = LogRecordSocketReceiver()
-    print('[N4DRemoteLog]About to start TCP server...')
+    print('[N4DRemoteLog] About to start TCP server for Logging...')
     tcpserver.serve_until_stopped()
   
   
@@ -121,7 +121,6 @@ class N4dRemoteLog:
     pass
   
 
-  
 if __name__ == '__main__':
   
   n4dLog = N4dRemoteLog()

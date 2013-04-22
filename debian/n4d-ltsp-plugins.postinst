@@ -7,7 +7,7 @@ set -e
 # the installation process
 n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp.conf  || true
 n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp-images.conf  || true
-
+n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp-log.conf  || true
 #DEBHELPER#
 
 exit 0

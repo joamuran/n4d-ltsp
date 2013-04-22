@@ -5,9 +5,12 @@ set -e
 
 # N4D module must be enabled to make more easier 
 # the installation process
-n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp.conf  || true
+#n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp.conf  || true
 n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp-images.conf  || true
 n4d-modules enable-plugin /etc/n4d/conf.d/n4d-remote-log.conf  || true
+n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp-clipboard.conf || true
+n4d-modules enable-plugin /etc/n4d/conf.d/n4d-ltsp-chroot.conf || true
+n4d-modules enable-plugin /etc/n4d/conf.d/ltsp_client_conf.conf || true
 #DEBHELPER#
 
 exit 0

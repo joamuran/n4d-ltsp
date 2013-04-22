@@ -1,8 +1,9 @@
-n4d-ltsp (0.1.5) precise; urgency=low
+n4d-ltsp (0.1.6) precise; urgency=low
 
   * Updated dependences 
+  * Added N4dRemoteLog as a new Logger Remote 
 
- -- Angel Berlanas Vicente <angel.berlanas@gmail.com>  Fri, 12 Apr 2013 13:06:29 +0200
+ -- Angel Berlanas Vicente <angel.berlanas@gmail.com>  Mon, 22 Apr 2013 18:16:17 +0200
 
 n4d-ltsp (0.1.4) precise; urgency=low
 

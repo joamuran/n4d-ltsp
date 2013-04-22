@@ -65,7 +65,11 @@ class N4dRemoteLog:
   
 
   
-
+if __name__ == '__main__':
+  
+  n4dLog = N4dRemoteLog()
+  n4dLog.create_logging_server("test",9999)
+  
 
   
 

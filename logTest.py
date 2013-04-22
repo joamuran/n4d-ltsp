@@ -1,17 +1,26 @@
 #!/usr/bin/env python
 
 import socket, sys, struct
+import logging, logging.handlers
 
-with open(sys.argv[1], 'rb') as f:
-    data_to_send = f.read()
+rootLogger = logging.getLogger('')
+rootLogger.setLevel(logging.DEBUG)
+socketHandler = logging.handlers.SocketHandler('localhost',
+                    logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+# don't bother with a formatter, since a socket handler sends the event as
+# an unformatted pickle
+rootLogger.addHandler(socketHandler)
 
-HOST = 'localhost'
-PORT = 9999
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print('connecting...')
-s.connect((HOST, PORT))
-print('sending config...')
-s.send(struct.pack('>L', len(data_to_send)))
-s.send(data_to_send)
-s.close()
-print('complete')
+# Now, we can log to the root logger, or any other logger. First the root...
+logging.info('Jackdaws love my big sphinx of quartz.')
+
+# Now, define a couple of other loggers which might represent areas in your
+# application:
+
+logger1 = logging.getLogger('myapp.area1')
+logger2 = logging.getLogger('myapp.area2')
+
+logger1.debug('Quick zephyrs blow, vexing daft Jim.')
+logger1.info('How quickly daft jumping zebras vex.')
+logger2.warning('Jail zesty vixen who grabbed pay from quack.')
+logger2.error('The five boxing wizards jump quickly.')

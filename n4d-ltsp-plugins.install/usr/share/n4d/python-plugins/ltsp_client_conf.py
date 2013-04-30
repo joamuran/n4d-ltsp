@@ -114,7 +114,7 @@ class LtspClientConfig:
               if line[13:18]=="gnome":
                 self.current_client.set_session("gnome")
               else:
-                self.current_client.set_session("lxde")
+                self.current_client.set_session("xfce")
               #print "session: "+line[12:]
             if line[:8]=="LDM_AUTO":
               #print "Autologin: "+line[14:]
@@ -175,8 +175,8 @@ class LtspClientConfig:
         writefile.write("\nLTSP_FATCLIENT="+client["fat"])
       if client["session"]=="gnome":
         writefile.write('\nLDM_SESSION="gnome-session-fallback"')
-      elif client["session"]=="lxde":
-        writefile.write('\nLDM_SESSION=/usr/bin/startlxde')
+      elif client["session"]=="xfce":
+        writefile.write('\nLDM_SESSION=/usr/bin/xfce4-session')
       # ignoring monitor
       if client["autologin"]=="checked":
         writefile.write('\nLDM_AUTOLOGIN=True')

@@ -148,8 +148,14 @@ class LtspChroot:
 			
 			# First prepare chroot
 			self.prepare_chroot_for_run(chroot_dir)
-
-			# TODO
+			if (command=="x-editor"):
+				print "Loading x-editor"
+			elif (command=="synaptic"):
+				print "Loading synaptic"
+			elif (command=="terminal"):
+				print "Loading terminal"
+			else:
+				print "Unknown"
 			
 			# At last leave chroot gracefully
 			self.umount_chroot(chroot_dir)

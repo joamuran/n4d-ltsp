@@ -113,10 +113,11 @@ class LtspChroot:
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/proc"])
 			# Mount /sys
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/sys"])
-			# Mount /dev
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
 			# Mount /dev/pts
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev/pts"])
+			# Mount /dev
+			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
+			
 			
 			return {'status': True, 'msg':'[N4dChroot] All is umounted'}
 	#def umount_chroot(self,chroot_dir)

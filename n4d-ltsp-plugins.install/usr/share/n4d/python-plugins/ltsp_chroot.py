@@ -93,6 +93,7 @@ class LtspChroot:
 			# Mount /dev/pts
 			ret=subprocess.check_output(["mount","-o","bind","/dev/pts",chroot_dir+"/dev/pts"])
 			
+			
 			return {'status': True, 'msg':'[N4dChroot] All is mounted'}
 			
 	#def prepare_chroot_for_run(self,chroot)
@@ -118,7 +119,6 @@ class LtspChroot:
 			# Mount /dev
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
 			
-			
 			return {'status': True, 'msg':'[N4dChroot] All is umounted'}
 	#def umount_chroot(self,chroot_dir)
 
@@ -128,19 +128,28 @@ class LtspChroot:
 		into a chroot
 		'''
 		try:
-			subprocess.check_output(["xhost",])
+			#subprocess.check_output(["xhost",])
+			#subprocess.check_output["Xephyr","-ac","-screen","1024x768",":1","&"]
+			#subprocess.Popen(["Xephyr","-ac -screen 800x600 :1"])
+			#subprocess.Popen(["Xephyr","-ac","-keybd","-screen","800x600",":1"])
+			subprocess.Popen(["Xephyr","-ac","-screen","800x600",":1"])
+			#subprocess.check_output(["chroot",chroot_dir, "sh","-c","export DISPLAY=:1"])
+			#subprocess.check_output["chroot",chroot_dir, "export","DISPLAY=:1"]
+			
 		except Exception as e:
 			return {'status': False, 'msg':'[N4dChroot] '+str(e)}
 	
 	#def prepare_X11_applications(self,chroot_dir)
 
-	def run_command_on_chroot(self,chroot_dir,command):
+	def run_command_on_chroot(self,chroot_dir,command,XServerIP):
 		'''
 		Possible commands:
 			* x-editor
 			* synaptic
 			* terminal
 		'''
+		import os
+		
 		if not self.test_chroot(chroot_dir)["status"] :
 		# If not a directory...you can't do nothing more.
 			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
@@ -149,14 +158,44 @@ class LtspChroot:
 			
 			# First prepare chroot
 			self.prepare_chroot_for_run(chroot_dir)
-			if (command=="x-editor"):
-				print "Loading x-editor"
-			elif (command=="synaptic"):
-				print "Loading synaptic"
-			elif (command=="terminal"):
-				print "Loading terminal"
-			else:
-				print "Unknown"
+			
+			# Then Prepare to run X applications
+			self.prepare_X11_applications(chroot_dir)
+			
+			try:
+				
+				# Now prepare the appropiate scripts in chroot
+				xscript=chroot_dir+"/tmp/xscript.sh"
+				f = open(xscript, 'w')
+				f.write("#/bin/sh\n\n")
+				f.write("export DISPLAY="+XServerIP+":1\n")
+							
+				if (command=="x-editor"):
+					print "Loading x-editor, display will be: "+XServerIP+":1"
+					f.write("scite\n")
+					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xeditor.sh"])
+				elif (command=="synaptic"):
+					print "Loading synaptic, display will be: "+XServerIP+":1"
+					f.write("synaptic\n")
+					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xsynaptic.sh"])
+				elif (command=="terminal"):
+					print "Loading terminal, display will be: "+XServerIP+":1"
+					f.write("xterm\n")
+					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xterminal.sh"])
+				else:
+					print "Unknown: "+command
+					f.write(command)
+
+				#Once scripts will be prepared, let's run it
+				f.close()
+				subprocess.Popen(["sudo", "chmod","+x", xscript])
+				subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+				print "3"
+				os.remove(xscript)
+
+			
+			except Exception as e:
+				return {'status': False, 'msg':'[N4dChroot] '+str(e)}
 			
 			# At last leave chroot gracefully
 			self.umount_chroot(chroot_dir)

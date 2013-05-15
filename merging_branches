@@ -1,0 +1,6 @@
+git remote add upstream git://github.com/octocat/Spoon-Knife.git
+
+Then you fetch
+
+git fetch upstream
+

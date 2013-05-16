@@ -128,14 +128,14 @@ class LtspChroot:
 		into a chroot
 		'''
 		try:
-			#subprocess.check_output(["xhost",])
-			#subprocess.check_output["Xephyr","-ac","-screen","1024x768",":1","&"]
-			#subprocess.Popen(["Xephyr","-ac -screen 800x600 :1"])
-			#subprocess.Popen(["Xephyr","-ac","-keybd","-screen","800x600",":1"])
-			subprocess.Popen(["Xephyr","-ac","-screen","800x600",":1"])
-			#subprocess.check_output(["chroot",chroot_dir, "sh","-c","export DISPLAY=:1"])
-			#subprocess.check_output["chroot",chroot_dir, "export","DISPLAY=:1"]
+			# Display on :42, the answer to the Universe, the Existence and all other things  (i.e. Xephire Display)
 			
+			# Açò s'haurà de fer al client!!!! -> Enxufar el Xephyr!!
+			
+			subprocess.Popen(["Xephyr","-ac","-screen","800x600",":42"])
+			subprocess.Popen(["metacity", "--display",":42"])
+			#subprocess.Popen(["xfwm4", "--display",":42"])
+
 		except Exception as e:
 			return {'status': False, 'msg':'[N4dChroot] '+str(e)}
 	
@@ -168,36 +168,50 @@ class LtspChroot:
 				xscript=chroot_dir+"/tmp/xscript.sh"
 				f = open(xscript, 'w')
 				f.write("#/bin/sh\n\n")
-				f.write("export DISPLAY="+XServerIP+":1\n")
-							
+				f.write("export DISPLAY="+XServerIP+":42\n")
+				f.write("setxkbmap es\n")
+				
 				if (command=="x-editor"):
-					print "Loading x-editor, display will be: "+XServerIP+":1"
+					print "Loading x-editor, display will be: "+XServerIP+":42"
 					f.write("scite\n")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xeditor.sh"])
 				elif (command=="synaptic"):
-					print "Loading synaptic, display will be: "+XServerIP+":1"
+					print "Loading synaptic, display will be: "+XServerIP+":42"
 					f.write("synaptic\n")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xsynaptic.sh"])
 				elif (command=="terminal"):
-					print "Loading terminal, display will be: "+XServerIP+":1"
+					print "Loading terminal, display will be: "+XServerIP+":42"
 					f.write("xterm\n")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xterminal.sh"])
+				
+				elif (command=="start_session"):
+					print "Loading terminal, display will be: "+XServerIP+":42"
+					f.write("mount --bind /home/ "+chroot_dir+"/home/\n")
+					f.write("gnome-session --session gnome-fallback\n")
+					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xterminal.sh"])
+				
 				else:
-					print "Unknown: "+command
+					print "Running user command: "+command
 					f.write(command)
 
 				#Once scripts will be prepared, let's run it
 				f.close()
 				subprocess.Popen(["sudo", "chmod","+x", xscript])
 				subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
-				print "3"
+				
 				os.remove(xscript)
+				# if command was session, we have to unlink /home and /etc
+				if (command=="start_session"):
+					subprocess.check_output(["umount","-l",chroot_dir+"/home"])
+				
 
 			
 			except Exception as e:
 				return {'status': False, 'msg':'[N4dChroot] '+str(e)}
 			
 			# At last leave chroot gracefully
+			
+			
 			self.umount_chroot(chroot_dir)
 	
 		

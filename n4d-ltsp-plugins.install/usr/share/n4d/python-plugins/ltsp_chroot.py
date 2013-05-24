@@ -148,6 +148,7 @@ class LtspChroot:
 		'''
 		#import os
 	
+		output=""
 		if not self.test_chroot(chroot_dir)["status"] :
 		# If not a directory...you can't do nothing more.
 			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
@@ -184,9 +185,9 @@ class LtspChroot:
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xterminal.sh"])
 				
 				elif (command=="start_session"):
-					print "Loading terminal, display will be: "+XServerIP+display
-					f.write("mount --bind /home/ "+chroot_dir+"/home/\n")
-					f.write("gnome-session --session gnome-fallback\n")
+					print "Starting session, display will be: "+XServerIP+display
+					#f.write("gnome-session --session gnome-fallback\n")
+					f.write("dbus-launch --exit-with-session gnome-session --session=gnome-fallback")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xterminal.sh"])
 				
 				else:
@@ -196,10 +197,10 @@ class LtspChroot:
 				#Once scripts will be prepared, let's run it
 				f.close()
 				subprocess.Popen(["sudo", "chmod","+x", xscript])
-				
-				subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
-				time.wait(1)
-				os.remove(xscript)
+				output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+				###output=subprocess.check_output(["/home/joamuran/Downloads/xchroot-v2.2","-a",chroot_dir, "/tmp/xscript.sh"])
+				#output=subprocess.check_output(["/home/joamuran/Downloads/xchroot-v2.2",chroot_dir])
+				#os.remove(xscript)
 				# if command was session, we have to unlink /home and /etc
 				if (command=="start_session"):
 					subprocess.check_output(["umount","-l",chroot_dir+"/home"])
@@ -207,15 +208,89 @@ class LtspChroot:
 
 			
 			except Exception as e:
-				return {'status': False, 'msg':'[N4dChroot] '+str(e)}
+				self.umount_chroot(chroot_dir)
+				if(e.__class__==subprocess.CalledProcessError):
+					#return {'status': False, 'msg':str(e).split(' ')[:-1]}
+					return {'status': False, 'msg':' '.join(str(e).split(' ')[-1:])}
+				else:
+					
+					return {'status': False, 'msg':'[N4dChroot] '+str(e)+" EXCEPTION CLASS: "+str(e.__class__)}
 			
 			# At last leave chroot gracefully
 			
 			
 			self.umount_chroot(chroot_dir)
-	
+			return {'status': True, 'msg':'[N4dChroot] Finished with Output: '+str(output)}
 		
 	#def run_command_on_chroot(self,chroot_dir,command)
+	
+	
+	
+	##################
+	def prepare_chroot_for_session(self, chroot_dir):
+		'''
+		Prepare chroot to start session
+		mounting some directories:
+			* /var/run
+			* ...
+		'''
+		try:
+
+			# Mounting /home on chroot
+			print "Let's mount home"
+			ret=subprocess.check_output(["mount","--bind","/home/",chroot_dir+"/home/"])
+			print "Check it!"
+			#ret=subprocess.check_output(["mount","-o","bind","/home",chroot_dir+"/home"])
+
+			#print "stage 1:"+str(ret)
+			# God takes we confessed
+					
+			# linking /var/run/dbus
+			#ret=subprocess.check_output(["cp", "-r",chroot_dir+"/var/run/dbus", chroot_dir+"/var/run/dbus.bak"])
+			#ret=subprocess.check_output(["rm", "-rf", chroot_dir+"/var/run/dbus"])
+			#ret=subprocess.check_output(["mkdir", chroot_dir+"/var/run/dbus"])
+			#ret=subprocess.check_output(["ln", "-s", "/var/run/dbus", chroot_dir+"/var/run/dbus"])
+			
+			# link /var/lib/dbus/machine-id
+			###ret=subprocess.check_output(["cp", "-r", chroot_dir+"/var/lib/dbus/machine-id", chroot_dir+"/var/lib/dbus/machine-id.bak"])
+			###ret=subprocess.check_output(["rm", "-rf", chroot_dir+"/var/lib/dbus/machine-id"])
+			###ret=subprocess.check_output(["cp", "/var/lib/dbus/machine-id", chroot_dir+"/var/lib/dbus/machine-id"])
+			
+			return ret
+			
+		except Exception as e:
+			print("LtspSessionCommands: Not mounted " + str(chroot_dir))
+			return e		
+	#def prepare_chroot_for_run(self,chroot)
+		
+	
+	def remove_session(self, chroot_dir):
+		'''
+		Umount system directories
+		now with -lazy, 
+		TODO:
+			test if it is mounted already
+		'''
+		if not self.test_chroot(chroot_dir)["status"] :
+			# If not a directory...you can't do nothing more.
+			return False
+		else:
+			ret=subprocess.check_output(["umount","-l",chroot_dir+"/home/"])
+					
+			# unlinking /var/run/dbus
+			#ret=subprocess.check_output(["rm", "-rf", chroot_dir+"/var/run/dbus"])
+			#ret=subprocess.check_output(["mv", chroot_dir+"/var/run/dbus.bak", chroot_dir+"/var/run/dbus"])
+			
+			# unlink /var/lib/dbus/machine-id
+			###ret=subprocess.check_output(["rm", "-rf", chroot_dir+"/var/lib/dbus/machine-id"])
+			###ret=subprocess.check_output(["mv", chroot_dir+"/var/lib/dbus/machine-id.bak", chroot_dir+"/var/lib/dbus/machine-id"])
+			
+			
+			return True
+	#def remove_session
+		
+	
+	##################
 
 
 

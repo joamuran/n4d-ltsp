@@ -170,7 +170,12 @@ class LtspChroot:
 				f.write("export DISPLAY="+XServerIP+display+"\n")
 				#f.write("metacity &\n")
 				f.write("setxkbmap es\n")
-				
+				# Avoid shuddown
+				f.write("alias shutdown=' '\n")
+				f.write("alias halt=' '\n")
+				f.write("alias init=' '\n")
+				f.write("alias telinit=' '\n")
+
 				if (command=="x-editor"):
 					print "Loading x-editor, display will be: "+XServerIP+display
 					f.write("scite\n")

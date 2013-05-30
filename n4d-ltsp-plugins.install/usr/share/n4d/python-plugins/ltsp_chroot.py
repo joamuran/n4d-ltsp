@@ -166,27 +166,31 @@ class LtspChroot:
 				xscript=chroot_dir+"/tmp/xscript.sh"
 				print "Building file: "+xscript
 				f = open(xscript, 'w')
-				f.write("#/bin/sh\n\n")
+				f.write("#/bin/bash\n\n")
+				#f.write("shopt -s expand_aliases\n")
 				f.write("export DISPLAY="+XServerIP+display+"\n")
 				#f.write("metacity &\n")
 				f.write("setxkbmap es\n")
 				# Avoid shuddown
-				f.write("alias shutdown=' '\n")
-				f.write("alias halt=' '\n")
-				f.write("alias init=' '\n")
-				f.write("alias telinit=' '\n")
+				f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
+				f.write("echo \"alias shutdown='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias halt='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias init='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias telinit='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
 
+			
 				if (command=="x-editor"):
 					print "Loading x-editor, display will be: "+XServerIP+display
-					f.write("scite\n")
+					f.write("dbus-launch --exit-with-session scite\n")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xeditor.sh"])
 				elif (command=="synaptic"):
 					print "Loading synaptic, display will be: "+XServerIP+display
-					f.write("synaptic\n")
+					f.write("dbus-launch --exit-with-session synaptic\n")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xsynaptic.sh"])
 				elif (command=="terminal"):
 					print "Loading terminal, display will be: "+XServerIP+display
-					f.write("xterm\n")
+					f.write("dbus-launch --exit-with-session xterm\n")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xterminal.sh"])
 				
 				elif (command=="start_session"):

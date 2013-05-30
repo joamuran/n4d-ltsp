@@ -47,7 +47,7 @@ class LTSPX11Environment:
 			# Check if Xephir is running on :display
 			self.RemoveXephyrProcess(display)
 			# Display on display
-			pid=subprocess.Popen(["Xephyr","-ac","-screen",screen,display])
+			pid=subprocess.Popen(["Xephyr","-ac","-br","-screen",screen,display])
 			subprocess.Popen(["metacity", "--display",display])
 			#subprocess.Popen(["openbox", "--display",display])
 			

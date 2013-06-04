@@ -100,9 +100,37 @@ class LtspImage:
 		except Exception as e:
 			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
 		
-	#def create_desktop
+		#def create_desktop
 	
 	
+	# N4D Remote Logging Methods
+	def _prepare_log(self):
+		import os
+		
+		if (os.path.isfile('/tmp/n4d_lstp_images.log')):
+			print 'Deleting File /tmp/n4d_lstp_images.log'
+			os.remove('/tmp/n4d_lstp_images.log')
+			return 'True'
+		# Clean log file
+		return 'False'
+		
+		#[ ! -e /tmp/n4drmirror.log ] || rm  -f /tmp/n4drmirror.log
+	# def  _prepare_log()
+	
+	def _exist_log_file(self):
+		if (os.path.isfile('/tmp/n4d_lstp_images.log')):
+			return 'True'
+		else:
+			return 'False'
+		#if [ -e /tmp/n4drmirror.log ] ; then
+		#	echo "True"
+		#else
+		#	echo "False"
+		#fi
+	# def _exist_log_file
+
+
+	# TODO 
 	
 	
 	

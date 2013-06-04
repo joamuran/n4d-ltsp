@@ -297,10 +297,35 @@ class LtspChroot:
 			
 			return True
 	#def remove_session
-		
+	
 	
 	##################
 
+	# N4D Remote Logging Methods
+	def _prepare_log(self):
+		import os
+		
+		if (os.path.isfile('/tmp/n4d_lstp_chroot.log')):
+			print 'Deleting File /tmp/n4d_lstp_chroot.log'
+			os.remove('/tmp/n4d_lstp_chroot.log')
+			return 'True'
+		# Clean log file
+		return 'False'
+		
+		#[ ! -e /tmp/n4drmirror.log ] || rm  -f /tmp/n4drmirror.log
+	# def  _prepare_log()
+	
+	def _exist_log_file(self):
+		if (os.path.isfile('/tmp/n4d_lstp_chroot.log')):
+			return 'True'
+		else:
+			return 'False'
+		#if [ -e /tmp/n4drmirror.log ] ; then
+		#	echo "True"
+		#else
+		#	echo "False"
+		#fi
+	# def _exist_log_file
 
 
 	# TODO 

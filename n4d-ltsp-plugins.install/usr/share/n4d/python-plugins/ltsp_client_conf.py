@@ -190,3 +190,4 @@ client=LtspClientConfig()
 print client.get_ltsp_conf()
 #conf=client.set_ltsp_conf('{"clients":[{"mac":"A1:B1:C2:D4:E5:F6","fat":"true","name":"n1","desc":"desc1","session":"gnome","monitor":"auto","autologin":"unchecked","username":"","userpass":""},{"mac":"A1:B1:C2:D4:E5:F6","fat":"true","name":"","desc":"","session":"lxde","monitor":"auto","autologin":"checked","username":"user","userpass":"123"}]}')
 #print conf
+

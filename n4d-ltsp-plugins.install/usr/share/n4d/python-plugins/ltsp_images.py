@@ -11,13 +11,17 @@
 import sys
 import subprocess
 
+
 class LtspImage:
+	
+	
+	llx_ltsp_status="available"
 	
 	def __init__(self):
 		'''
 		A simple init method
 		'''
-		pass    
+		print "[LTSPImage] Setting LTSP Status: Available"
 	#def init
 
 	def startup(self,options):
@@ -100,25 +104,54 @@ class LtspImage:
 		except Exception as e:
 			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
 		
-		#def create_desktop
+	#def create_desktop
+	
+	def regenerate_img(self, imgchroot):
+		'''
+		Regenerates img file for chroot
+		'''
+		
+		print "Regenerating image from "+imgchroot
+		print "Status: "+self.llx_ltsp_status
+		
+		try:
+			self.llx_ltsp_status="working"
+			f = open('/tmp/n4drlstpimages.log', 'w')
+			f.write('tralari')
+			#ret=subprocess.check_output(["ls","/tmp"]) # to modify
+			#ret=subprocess.check_output(["ls","/"]) # to modify
+			ret=subprocess.call(["apt-get","update"],stdout=f) # to modify
+			#f.write(ret)
+			self.llx_ltsp_status="available"
+			f.close()
+						
+			return {'status': True, 'msg':'[LtspImage] img updated'}
+		except Exception as e:
+			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
+	
+
+	#def regenerate_img
+		
+	
+	
 	
 	
 	# N4D Remote Logging Methods
-	def _prepare_log(self):
+	def prepare_log(self):
 		import os
 		
-		if (os.path.isfile('/tmp/n4d_lstp_images.log')):
-			print 'Deleting File /tmp/n4d_lstp_images.log'
-			os.remove('/tmp/n4d_lstp_images.log')
+		if (os.path.isfile('/tmp/n4drlstpimages.log')):
+			print 'Deleting File /tmp/n4drlstpimages.log'
+			os.remove('/tmp/n4drlstpimages.log')
 			return 'True'
 		# Clean log file
 		return 'False'
 		
 		#[ ! -e /tmp/n4drmirror.log ] || rm  -f /tmp/n4drmirror.log
-	# def  _prepare_log()
+	# def  prepare_log()
 	
-	def _exist_log_file(self):
-		if (os.path.isfile('/tmp/n4d_lstp_images.log')):
+	def exist_log_file(self):
+		if (os.path.isfile('/tmp/n4drlstpimages.log')):
 			return 'True'
 		else:
 			return 'False'
@@ -127,7 +160,15 @@ class LtspImage:
 		#else
 		#	echo "False"
 		#fi
-	# def _exist_log_file
+	# def exist_log_file
+
+	def get_status(self):
+		if (self.llx_ltsp_status=="available"):
+			return "{'status':'available','msg':'Ltsp Images is ready'}"
+		else:
+			return "{'status':'busy','msg':'LTSP Images is busy'}"
+		pass
+	
 
 
 	# TODO 

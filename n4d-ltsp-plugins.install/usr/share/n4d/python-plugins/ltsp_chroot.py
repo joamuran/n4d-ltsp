@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 # This script is licensed under GPL v3 or higher
 #
 # Authors: Angel Berlanas Vicente 
@@ -10,6 +11,7 @@
 # Libraries
 import sys
 import subprocess
+
 
 class LtspChroot:
 
@@ -330,6 +332,123 @@ class LtspChroot:
 
 	# TODO 
 	
+	def get_json_images(self):
+		import os
+		import os.path
+		import subprocess
+		'''
+		Return images installed on system.
+		'''
+		
+		'''
+		static values contains description of images and the place of img and chroot dirs.
+		In further developts, and to enhace flexibility to manage multiple clients from
+		same image, it can be placed in a config file, manageable by the user.
+		'''
+		static_values={"client":{"desc":"LliureX School Model appends traditional classroom model. In the classroom model, the IT classrooms form an independent network with a server to wich can connect workstation as well as thin clients. The new School Model, in addition, allows the interconnection of a variety of classrooms with the school server	.",
+					 "name":"Classroom Client",
+					 "img": "lliurex-client.png",
+					 "image_file":"/opt/ltsp/images/llx-client.img",
+					 "squashfs_dir":"/opt/ltsp/llx-client/"},
+				"desktop":{"desc":"LliureX Desktop is the adaptation of the generic distribution LliureX designed for personal computers, the hall of teachers, secretaries, etc.. That is, is intended to be installed on computers that do not rely on a server (not found in the computer lab or in the library ...).",
+					 "name":"LliureX Desktop",
+					 "img": "lliurex-escriptori.png",
+					 "image_file":"/opt/ltsp/images/llx-desktop.img",
+					 "squashfs_dir":"/opt/ltsp/llx-desktop/"},
+				"infantil":{"desc":"LliureX Infantil is the LliureX adaptation for First and Primary School.",
+					 "name":"LliureX Infantil",
+					 "img": "lliurex-infantil.png",
+					 "image_file":"/opt/ltsp/images/llx-infantil.img",
+					 "squashfs_dir":"/opt/ltsp/llx-infantil/"},
+				"musica":{"desc":"LliureX Music the adaptation for multimedia computers with specific software needs for audio, video and multimedia.",
+					 "name":"LliureX Music",
+					 "img": "lliurex-musica.png",
+					 "image_file":"/opt/ltsp/images/llx-musica.img",
+					 "squashfs_dir":"/opt/ltsp/llx-musica/"},
+				"pime":{"desc":"LliureX Pime is an adaptation that has been developed for use in vocational training families of Commerce Administration and Management and Marketing. Includes a selection of applications tailored to the business-oriented programs, without educational applications for Primary and Secondary Schools, as well as applications to support teaching. For this reasons, LliureX Pime is a good candidate for those SMEs (Small and Medium Enterprises) who want to introduces in the free software, especially for the Valencian Community, as the environment is translated into Catalan and Spanish, as in other adaptations LliureX.",
+					 "name":"LliureX Pime",
+					 "img": "lliurex-pime.png",
+					 "image_file":"/opt/ltsp/images/llx-pime.img",
+					 "squashfs_dir":"/opt/ltsp/llx-pime/"}
+					}
+		
+		ret=[]
+		'''img={"id": "tralari", "name": "tralari", "desc":"tralara",
+			   "img": "wwwww", "image_file": "aaaaaaa", "squashfs_dir":"wwwwwwww",
+			   "installed":22222.33333, "lliurex_version":"w2",
+			   "errorcode":"qwqqq", "errormsg":"eeeeee"}
+		
+		ret.append(img)
+		ret.append(img)'''
+		
+		for i in ["client", "desktop", "infantil", "musica", "pime"]:
+			img_id=i
+			img_name=static_values[i]["name"]
+			img_desc=static_values[i]["desc"]
+			img_img=static_values[i]["img"]
+			img_file=static_values[i]["image_file"]
+			img_squash=static_values[i]["squashfs_dir"]
+			
+			print "squash: "+img_squash;
+			
+			# Check if exists img file and gets the date
+			if os.path.exists(img_file):
+				img_installed=os.stat(img_file).st_mtime
+				# Let's check if there is also directory and its lliurex-version
+				if (os.path.isdir(img_squash)):
+					print "is dir"
+					try:
+						# Direcroty exists, check chroot
+						if (os.path.isfile('/tmp/llx-version-chroot.info')):
+							os.remove('/tmp/llx-version-chroot.info')
+						f = open('/tmp/llx-version-chroot.info', 'w')
+						subprocess.check_call(["chroot",img_squash, "lliurex-version"],stdout=f) # to modify
+						f.close()
+						f = open('/tmp/llx-version-chroot.info', 'r')
+						img_lliurex_version=f.readline();
+						img_errorcode=None
+						img_errormsg=None
+						
+					except Exception as e:
+						img_lliurex_version="unknown"
+						img_errorcode="NO_LLIUREX_VERSION_IN_CHROOT"
+						img_installed=None
+						img_errormsg="Chroot image "+img_squash+" seems that has no a valid LliureX System installed. Could not get lliurex-version."
+						pass
+					
+				else: # img_sqash does not exists-> Error
+					print ("is no dir")
+					img_lliurex_version="unexistent";
+					img_errorcode="NO_CHROOT_FOR_IMAGE"
+					img_installed=None
+					img_errormsg="Chroot folder "+img_squash+" does not exists. Maybe it's lost or corrupt."
+									
+				
+			else:
+				# Check now it there was an chroot dir, but no img, so, there is an error
+				if (os.path.isdir(img_squash)):
+					print ("[N4d_LTSP_CHROOT] Chroot folder exists, but not image file. Crashed on installation. ")
+					img_lliurex_version="unexistent";
+					img_errorcode="NO_IMAGE_FOR_CHROOT"
+					img_installed=None
+					img_errormsg="Client image "+img_file+" for chroot folder "+img_squash+" does not exists. It is hardly due to a failure in the packages installation. Update mirror before install an image, please."
+					
+				else:
+					#print ("does not exists")
+					img_installed=None
+					img_lliurex_version=None
+					img_errorcode=None
+					img_errormsg=None
+			
+			img={"id": img_id, "name": img_name, "desc":img_desc,
+			   "img": img_img, "image_file": img_file, "squashfs_dir":img_squash,
+			   "installed":img_installed, "lliurex_version":img_lliurex_version,
+			   "errorcode":img_errorcode, "errormsg":img_errormsg}
+
+			ret.append(img)
+		
+		return {"images": ret}
+		
 
 #class LtspChroot
 

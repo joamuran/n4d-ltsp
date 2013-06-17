@@ -81,6 +81,7 @@ class LtspChroot:
 			* /sys/
 			* 
 		'''
+		
 		if not self.test_chroot(chroot_dir)["status"] :
 			# If not a directory...you can't do nothing more.
 			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
@@ -408,12 +409,14 @@ class LtspChroot:
 						img_lliurex_version=f.readline();
 						img_errorcode=None
 						img_errormsg=None
+						img_errortype=None
 						
 					except Exception as e:
 						img_lliurex_version="unknown"
 						img_errorcode="NO_LLIUREX_VERSION_IN_CHROOT"
 						img_installed=None
 						img_errormsg="Chroot image "+img_squash+" seems that has no a valid LliureX System installed. Could not get lliurex-version."
+						img_errortype="ERROR"
 						pass
 					
 				else: # img_sqash does not exists-> Error
@@ -422,16 +425,41 @@ class LtspChroot:
 					img_errorcode="NO_CHROOT_FOR_IMAGE"
 					img_installed=None
 					img_errormsg="Chroot folder "+img_squash+" does not exists. Maybe it's lost or corrupt."
+					img_errortype="ERROR"
 									
 				
 			else:
 				# Check now it there was an chroot dir, but no img, so, there is an error
 				if (os.path.isdir(img_squash)):
 					print ("[N4d_LTSP_CHROOT] Chroot folder exists, but not image file. Crashed on installation. ")
-					img_lliurex_version="unexistent";
-					img_errorcode="NO_IMAGE_FOR_CHROOT"
-					img_installed=None
-					img_errormsg="Client image "+img_file+" for chroot folder "+img_squash+" does not exists. It is hardly due to a failure in the packages installation. Update mirror before install an image, please."
+					# Chech lliruex-version
+					try:
+						if (os.path.isfile('/tmp/llx-version-chroot.info')):
+							os.remove('/tmp/llx-version-chroot.info')
+						f = open('/tmp/llx-version-chroot.info', 'w')
+						subprocess.check_call(["chroot",img_squash, "lliurex-version"],stdout=f) # to modify
+						f.close()
+						f = open('/tmp/llx-version-chroot.info', 'r')
+						img_lliurex_version=f.readline();
+						
+						if(img_lliurex_version!=""):
+							img_installed=None
+							img_errorcode="NO_IMAGE_FOR_CHROOT_WITH_VERSION"
+							img_errormsg="Client image "+img_file+" for chroot folder "+img_squash+" does not exists. It is hardly due to a failure in the packages installation. You can try to update system or regenerate image to solve it."
+							img_errortype="WARNING"
+						else:										
+							img_lliurex_version="unexistent";
+							img_installed=None
+							img_errorcode="NO_IMAGE_FOR_CHROOT"
+							img_errormsg="Client image "+img_file+" for chroot folder "+img_squash+" does not exists and there is not a valid LliureX Version in the folder. It is hardly due to a failure in the packages installation. Update mirror before install an image, please."
+							img_errortype="ERROR"
+					except Exception:
+						img_lliurex_version="unexistent";
+						img_installed=None
+						img_errorcode="NO_IMAGE_FOR_CHROOT"
+						img_errormsg="Client image "+img_file+" for chroot folder "+img_squash+" does not exists and there is not a valid LliureX Version in the folder. It is hardly due to a failure in the packages installation. Update mirror before install an image, please."
+						img_errortype="ERROR"
+						pass
 					
 				else:
 					#print ("does not exists")
@@ -439,11 +467,12 @@ class LtspChroot:
 					img_lliurex_version=None
 					img_errorcode=None
 					img_errormsg=None
+					img_errortype=None
 			
 			img={"id": img_id, "name": img_name, "desc":img_desc,
 			   "img": img_img, "image_file": img_file, "squashfs_dir":img_squash,
 			   "installed":img_installed, "lliurex_version":img_lliurex_version,
-			   "errorcode":img_errorcode, "errormsg":img_errormsg}
+			   "errorcode":img_errorcode, "errortype":img_errortype, "errormsg":img_errormsg}
 
 			ret.append(img)
 		

@@ -174,6 +174,11 @@ class LtspImage:
 	
 	#def regenerate_img
 	
+	
+	def is_enough_space_in_disk(self, imgchroot):
+		
+		return {'status':False, 'free':'20000000'}
+	
 	def n4d_update_client(self, clientid, imgchroot, connection_user):
 		'''
 		Regenerates img file for chroot
@@ -195,19 +200,28 @@ class LtspImage:
 			f.flush()
 			
 			# Prepare for operate into chroot via n4d
+			print "111111111111111111111111111111111111111"
 			server = ServerProxy("https://127.0.0.1:9779")
+			print "2222222222222222222222222222222222222222"
+			print str(connection_user)
+						
+			print str(img_chroot)
+			
 			server.prepare_chroot_for_run(connection_user,"LtspChroot", img_chroot)
-					
+			print "3333333333333333333333333333333333333"
 			# Update chroot			
 			self.llx_ltsp_status_msg=subprocess.check_call(["chroot",imgchroot,"lliurex-upgrade"],stdout=f) # to modify
+			print "44444444444444444444444444444"
 			
 			# Umount chroot
 			server.umount_chroot(connection_user,"LtspChroot", img_chroot)
+			print "55555555555555555555555555555555555555555"
 			
 			# Regenerate image
 			f.write("[llxptspmsg] Stage 2 of 2. Regenerating image\n")
 			f.flush()
 			self.llx_ltsp_status_msg=subprocess.check_call(["ltsp-update-image",clientid],stdout=f) # to modify
+			print "66666666666666666666666666666666666666"
 			
 			#f.write(ret)
 			self.llx_ltsp_status="available"

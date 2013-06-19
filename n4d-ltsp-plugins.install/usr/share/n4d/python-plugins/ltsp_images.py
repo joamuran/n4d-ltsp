@@ -176,8 +176,17 @@ class LtspImage:
 	
 	
 	def is_enough_space_in_disk(self, imgchroot):
+		import os
+		# Calculate chroot size
+		total_size = 0
+		start_path=imgchroot
+		for dirpath, dirnames, filenames in os.walk(start_path):
+			for f in filenames:
+				fp = os.path.join(dirpath, f)
+				if os.path.exists(fp):
+					total_size += os.stat(fp).st_size				#total_size += os.path.getsize(fp)
 		
-		return {'status':False, 'free':'20000000'}
+		return {'status':False, 'free':'20000000', 'used': str(total_size)}
 	
 	def n4d_update_client(self, clientid, imgchroot, connection_user):
 		'''

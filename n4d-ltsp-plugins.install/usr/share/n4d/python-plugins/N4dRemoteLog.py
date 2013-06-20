@@ -52,6 +52,27 @@ class N4dRemoteLog:
     return {'status':True, 'file':lines}
   #def read_log_lines_from_server(self, filename, line_start, line_nums)
   
+  def read_n4dr_log_lastline(self, log_name):
+    '''
+    Read last line from log
+    '''
+    log_name_fullpath=N4dRemoteLog.LOG_PATH+N4dRemoteLog.LOG_PREFIX+log_name+".log"
+    percent=""
+    if os.path.exists(log_name_fullpath):
+        lines = open(log_name_fullpath, 'r').readlines()
+        line=lines[len(lines)-1]
+        if (line[len(line)-1]!='%'): # If not a % return false
+          return {'status':False, 'file':''}
+        percent=(line[len(line)-4:len(line)]).replace(" ","").replace("%","");
+
+    print("*<<<*"+percent+"*>>>*")
+    
+    return {'status':True, 'file':str(percent)}
+    #return {'status':True, 'file':str(line)}
+    
+  
+  
+  
   def write_n4dr_log(self,log_name,log_msg):
     '''
     Write the log_msg to the ip_to_write with the logname

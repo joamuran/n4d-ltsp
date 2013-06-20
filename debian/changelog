@@ -1,3 +1,9 @@
+n4d-ltsp (0.1.8.5) precise; urgency=low
+
+  * Enhace log capabilities.
+
+ -- joamuran <joamuran@gmail.com>  Thu, 20 Jun 2013 22:35:38 +0200
+
 n4d-ltsp (0.1.8.4) precise; urgency=low
 
   * Adde capabilities to manage images.

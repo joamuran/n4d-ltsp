@@ -112,23 +112,31 @@ class LtspImage:
 		'''
 		Regenerates img file for chroot
 		'''
-		
+		import time
 		print "Regenerating image from "+imgchroot
 		print "Status: "+self.llx_ltsp_status
-		
-		dirs=imgchroot.split("/")
-		img_name=dirs[len(b)-1]
-
+	
 		try:
+			dirs=imgchroot.split("/")
+			print "*"+imgchroot+"*"
+			print str(dirs)
+			img_name=dirs[len(dirs)-1]
+			if (img_name==''):
+				img_name=dirs[len(dirs)-2]
+						
 			self.llx_ltsp_status="working"
 			f = open('/tmp/n4drlstpimages.log', 'w')
-			
-			
-			
 			
 			# Regenerate image
 			f.write("[llxptspmsg] Regenerating image\n")
 			f.flush()
+			#self.llx_ltsp_status_msg=subprocess.check_call(["ls","-l"],stdout=f) # to modify
+			#self.llx_ltsp_status_msg=subprocess.check_call(["echoprogress"],stdout=f) # to modify
+			#self.llx_ltsp_status_msg=subprocess.check_call(["ls","-l"],stdout=f) # to modify
+			#self.llx_ltsp_status_msg=subprocess.check_call(["echoprogress"],stdout=f) # to modify
+			
+			#self.llx_ltsp_status_msg=subprocess.check_call(["cat","/tmp/tralari.log"],stdout=f) # to modify
+
 			self.llx_ltsp_status_msg=subprocess.check_call(["ltsp-update-image",img_name],stdout=f) # to modify
 			
 			#f.write(ret)
@@ -137,6 +145,7 @@ class LtspImage:
 						
 			return {'status': True, 'msg':'[LtspImage] img updated'}
 		except Exception as e:
+			self.llx_ltsp_status="available"
 			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
 	
 	#def regenerate_img
@@ -177,6 +186,7 @@ class LtspImage:
 	
 	def is_enough_space_in_disk(self, imgchroot):
 		import os
+		
 		# Calculate chroot size
 		total_size = 0
 		start_path=imgchroot
@@ -184,9 +194,18 @@ class LtspImage:
 			for f in filenames:
 				fp = os.path.join(dirpath, f)
 				if os.path.exists(fp):
-					total_size += os.stat(fp).st_size				#total_size += os.path.getsize(fp)
+					total_size += os.stat(fp).st_size
 		
-		return {'status':False, 'free':'20000000', 'used': str(total_size)}
+		# Calculate free space... in opt and /
+		
+		stat=os.statvfs("/opt/ltsp")
+		free=stat.f_bsize*stat.f_bavail
+		
+		if(free<total_size):
+			return {'status':False, 'free':str(free), 'used': str(total_size)}
+		else:
+			return {'status':True, 'free':str(free), 'used': str(total_size)}
+			
 	
 	def n4d_update_client(self, clientid, imgchroot, connection_user):
 		'''
@@ -240,7 +259,7 @@ class LtspImage:
 		except Exception as e:
 			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
 	
-	#def regenerate_img
+	#def n4d_update_client
 	
 	def n4d_delete_client(self, clientid, imgchroot, img_file, connection_user):
 		'''

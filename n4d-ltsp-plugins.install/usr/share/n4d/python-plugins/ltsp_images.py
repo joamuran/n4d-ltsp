@@ -146,6 +146,7 @@ class LtspImage:
 			return {'status': True, 'msg':'[LtspImage] img updated'}
 		except Exception as e:
 			self.llx_ltsp_status="available"
+			f.close()
 			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
 	
 	#def regenerate_img
@@ -207,7 +208,7 @@ class LtspImage:
 			return {'status':True, 'free':str(free), 'used': str(total_size)}
 			
 	
-	def n4d_update_client(self, clientid, imgchroot, connection_user):
+	def n4d_update_client(self, clientid, imgchroot, username, password):
 		'''
 		Regenerates img file for chroot
 		'''
@@ -217,6 +218,7 @@ class LtspImage:
 		# o ho pose aci, o me cree altra instancia de ltspchroot, o va a la
 		# llibreria o directament la utilitze per n4d!!!!!!<---
 
+		connection_user=(username, password)
 		
 		print "Updating image "+clientid+" from "+imgchroot
 		print "Status: "+self.llx_ltsp_status
@@ -228,28 +230,22 @@ class LtspImage:
 			f.flush()
 			
 			# Prepare for operate into chroot via n4d
-			print "111111111111111111111111111111111111111"
 			server = ServerProxy("https://127.0.0.1:9779")
-			print "2222222222222222222222222222222222222222"
-			print str(connection_user)
+			print str(connection_user)+str()
 						
-			print str(img_chroot)
+			print str(imgchroot)
 			
-			server.prepare_chroot_for_run(connection_user,"LtspChroot", img_chroot)
-			print "3333333333333333333333333333333333333"
+			server.prepare_chroot_for_run(connection_user,"LtspChroot", imgchroot)
 			# Update chroot			
 			self.llx_ltsp_status_msg=subprocess.check_call(["chroot",imgchroot,"lliurex-upgrade"],stdout=f) # to modify
-			print "44444444444444444444444444444"
 			
 			# Umount chroot
-			server.umount_chroot(connection_user,"LtspChroot", img_chroot)
-			print "55555555555555555555555555555555555555555"
+			server.umount_chroot(connection_user,"LtspChroot", imgchroot)
 			
 			# Regenerate image
 			f.write("[llxptspmsg] Stage 2 of 2. Regenerating image\n")
 			f.flush()
 			self.llx_ltsp_status_msg=subprocess.check_call(["ltsp-update-image",clientid],stdout=f) # to modify
-			print "66666666666666666666666666666666666666"
 			
 			#f.write(ret)
 			self.llx_ltsp_status="available"
@@ -257,13 +253,15 @@ class LtspImage:
 						
 			return {'status': True, 'msg':'[LtspImage] img updated'}
 		except Exception as e:
+			self.llx_ltsp_status="available"
+			f.close()
 			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
 	
 	#def n4d_update_client
 	
 	def n4d_delete_client(self, clientid, imgchroot, img_file, connection_user):
 		'''
-		Regenerates img file for chroot
+		Remove an LTSP image and its chroot
 		'''
 		import os
 		import shutil

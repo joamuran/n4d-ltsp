@@ -62,6 +62,8 @@ class LtspClientConfig:
     '''
     self.conf_file="/var/lib/tftpboot/ltsp/lts.conf"
     self.client_list=[]
+    self.default_session="gnome"
+    self.default_type="thin"
     
     pass    
   #def init
@@ -132,6 +134,15 @@ class LtspClientConfig:
             
             #print line[:7]
             #print self.current_section+"> "+line
+          elif self.current_section=="default":
+            # Get Parameters for default section
+            if line[:8]=="LTSP_FAT":
+              self.default_type=urllib.quote(line[15:])
+            if line[:8]=="LDM_SESS":
+              if line[13:18]=="gnome":
+                self.default_session="gnome"
+              else:
+                self.default_session="xfce"
       else: ##if len(line)>0 and line[0]!="#":
         if len(line)>0 and line[:8]=="#LLX-Des":
           self.current_client.set_desc(urllib.quote(line[10:]))
@@ -141,7 +152,9 @@ class LtspClientConfig:
       # Write the last client
       self.client_list.append(self.current_client)
   
-    config='{"clients":['
+    '{"default_type":"fat", "default_session":"gnome"}'
+    config='{"default_type":"'+self.default_type+'", "default_session":"'+self.default_session+'",'
+    config=config+'"clients":['
     index=0
     for cl in self.client_list:
       myclient=cl.get_client()
@@ -155,7 +168,7 @@ class LtspClientConfig:
     return config 
     
   
-  def set_ltsp_conf(self, config):
+  def set_ltsp_conf(self, config, class_type, class_session):
     print "Going to save..."+config
     self.new_conf_file="/var/lib/tftpboot/ltsp/lts.conf"
     self.template_file="/var/lib/lliurex-ltsp/templates/lts.conf"
@@ -163,7 +176,21 @@ class LtspClientConfig:
     writefile=open(self.new_conf_file, 'w');
     for line in readlines:
       writefile.write(line)
+
+    writefile.write("# Default Session for classroom")
+    if(class_session=="gnome"):
+      writefile.write('\nLDM_SESSION="gnome-session-fallback"')
+    else:
+      writefile.write('\nLDM_SESSION=/usr/bin/xfce4-session')
+
+    writefile.write("# Default Classroom type")
+    if(class_type=="fat"):
+      writefile.write("\nLTSP_FATCLIENT=true")
+    else:
+      writefile.write("\nLTSP_FATCLIENT=false")
     
+
+
     clientlist=json.loads(config)
     for client in clientlist["clients"]:
       writefile.write("\n\n["+client["mac"]+"]")

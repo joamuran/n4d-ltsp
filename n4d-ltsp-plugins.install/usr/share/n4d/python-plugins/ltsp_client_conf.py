@@ -47,9 +47,9 @@ class Client:
     client=client + ',"autologin":"'+self.autologin+'"'
     client=client + ',"username":"'+self.username+'"'
     client=client + ',"userpass":"'+self.userpass+'"}'
-    print "*"
-    print client
-    print "!"
+    #print "*"
+    #print client
+    #print "!"
     return client
 
 
@@ -137,7 +137,25 @@ class LtspClientConfig:
           elif self.current_section=="default":
             # Get Parameters for default section
             if line[:8]=="LTSP_FAT":
-              self.default_type=urllib.quote(line[15:])
+              is_fat=urllib.quote(line[15:])
+              #self.default_type=urllib.quote(line[15:])
+              #print "||"+self.default_type+"||"
+              #print "||"+str(type(self.default_type))+"||"
+              #if self.default_type=="true":
+               #   print "set default type is true"
+              #else:
+               #   print "set default type is NOT true"
+  
+             # if self.default_type=="false":
+               #   print "set default type is FALSE"
+              #else:
+               #   print "set default type is NOT FALSE"
+  
+              if is_fat=="true":
+                  self.default_type="fat"
+              else:
+                  self.default_type="thin"
+
             if line[:8]=="LDM_SESS":
               if line[13:18]=="gnome":
                 self.default_session="gnome"
@@ -177,13 +195,13 @@ class LtspClientConfig:
     for line in readlines:
       writefile.write(line)
 
-    writefile.write("# Default Session for classroom")
+    writefile.write("\n# Default Session for classroom")
     if(class_session=="gnome"):
       writefile.write('\nLDM_SESSION="gnome-session-fallback"')
     else:
       writefile.write('\nLDM_SESSION=/usr/bin/xfce4-session')
 
-    writefile.write("# Default Classroom type")
+    writefile.write("\n# Default Classroom type")
     if(class_type=="fat"):
       writefile.write("\nLTSP_FATCLIENT=true")
     else:

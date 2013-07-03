@@ -20,7 +20,7 @@ n4d-ltsp (0.1.8.4) precise; urgency=low
 
   * Adde capabilities to manage images.
 
- -- joamuran <joamuran@Toshi>  Thu, 13 Jun 2013 10:52:20 +0200
+ -- joamuran <joamuran@gmail.com>  Thu, 13 Jun 2013 10:52:20 +0200
 
 n4d-ltsp (0.1.7) precise; urgency=low
 

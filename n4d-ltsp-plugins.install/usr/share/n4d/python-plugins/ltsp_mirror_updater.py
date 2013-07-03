@@ -37,11 +37,12 @@ class LtspMirrorUpdater:
 			f.write("dbus-launch --exit-with-session lliurex-mirror-gui\n")
 			f.close()
 			subprocess.Popen(["sudo", "chmod","+x", xscript])
-			output=subprocess.check_output(["/tmp/xscript.sh"])
+			#time.sleep(1)
+			output=subprocess.check_output(["sudo", xscript])
+			print str(output)
 			return {'status': True, 'msg':'[remote lliurex-mirror-gui] Finished with Output: '+str(output)}
 
 		except Exception:
 			return {'status': False, 'msg':'remote lliurex-mirror-gui'.join(str(e).split(' ')[-1:])}
 	
 #class LtspMirrorUpdater
-

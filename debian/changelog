@@ -1,3 +1,9 @@
+n4d-ltsp (0.1.9) precise; urgency=low
+
+  * Added remote execution of lliurex-mirror-gui
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Wed, 03 Jul 2013 11:46:49 +0200
+
 n4d-ltsp (0.1.8.6) precise; urgency=low
 
   * Added capabilities to config classroom.

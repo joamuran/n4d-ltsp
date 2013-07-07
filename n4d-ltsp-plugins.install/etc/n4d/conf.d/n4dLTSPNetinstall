@@ -1,0 +1,13 @@
+# Configuration file for LTSP n4d-modules at #lliurex
+# environments.
+[SETUP]
+type=python
+path=n4dLTSPNetinstall.py
+class=n4dLTSPNetinstall
+perms=adm,admins,admin
+[METHODS]
+n4dupdate=adm,admins,admin
+load_exports=adm,admins,admin
+n4d_get_unix_date=anonymous
+get_status=anonymous
+test=anonymous

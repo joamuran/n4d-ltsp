@@ -174,6 +174,7 @@ class LtspChroot:
 				f.write("export DISPLAY="+XServerIP+display+"\n")
 				#f.write("metacity &\n")
 				f.write("setxkbmap es\n")
+				f.write("metacity --display "+XServerIP+display+" &\n")
 				# Avoid shuddown
 				f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
 				f.write("echo \"alias shutdown='echo Bad luck, guy!'\" >> /root/.bashrc \n")
@@ -206,13 +207,27 @@ class LtspChroot:
 					print "Running user command: "+command
 					f.write(command)
 
-				#Once scripts will be prepared, let's run it
+				f.write("exit 0")
 				f.close()
+				
+				#Once scripts will be prepared, let's run it				
 				subprocess.Popen(["sudo", "chmod","+x", xscript])
-				output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
-				###output=subprocess.check_output(["/home/joamuran/Downloads/xchroot-v2.2","-a",chroot_dir, "/tmp/xscript.sh"])
-				#output=subprocess.check_output(["/home/joamuran/Downloads/xchroot-v2.2",chroot_dir])
-				#os.remove(xscript)
+				#output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+				
+				# yes... dirty code, but runs...
+				repeat=True
+				retries=0
+				output=None
+				while (repeat==True):
+					try:
+						output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+						repeat=False
+					except Exception as e:
+						retries=retries+1
+						if(retries>10):
+							return {'status': False, 'msg':'Max retries exceed'}
+				
+				
 				# if command was session, we have to unlink /home and /etc
 				if (command=="start_session"):
 					subprocess.check_output(["umount","-l",chroot_dir+"/home"])

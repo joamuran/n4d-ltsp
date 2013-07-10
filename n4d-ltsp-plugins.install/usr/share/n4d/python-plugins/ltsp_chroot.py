@@ -130,6 +130,7 @@ class LtspChroot:
 		Prepare a X11 environment to run graphical apps 
 		into a chroot -> This functionanlity has moved to client part (Xephyr will run on Client Administrator App, not on Server)
 		'''
+		
 		'''
 		try:
 			# Display on :42, the answer to the Universe, the Existence and all other things  (i.e. Xephire Display)
@@ -139,16 +140,17 @@ class LtspChroot:
 			#subprocess.Popen(["xfwm4", "--display",":42"])
 		except Exception as e:
 			return {'status': False, 'msg':'[N4dChroot] '+str(e)}
+
 	'''
 	#def prepare_X11_applications(self,chroot_dir)
-
+	'''
 	def run_command_on_chroot(self,chroot_dir,command,XServerIP,display):
-		'''
+		'' '
 		Possible commands:
 			* x-editor
 			* synaptic
 			* terminal
-		'''
+		'' ' 
 		#import os
 	
 		output=""
@@ -251,7 +253,123 @@ class LtspChroot:
 		
 	#def run_command_on_chroot(self,chroot_dir,command)
 	
+	'''
 	
+	def run_command_on_chroot(self,chroot_dir,command,XServerIP,display):
+		'''
+		Possible commands:
+			* x-editor
+			* synaptic
+			* terminal
+		'''
+		#import os
+	
+		output=""
+		if not self.test_chroot(chroot_dir)["status"] :
+		# If not a directory...you can't do nothing more.
+			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
+		
+		else: 
+			# First prepare chroot
+			self.prepare_chroot_for_run(chroot_dir)
+			
+			# Then Prepare to run X applications
+			self.prepare_X11_applications(chroot_dir)
+			
+			try:
+				import time
+				# Now prepare the appropiate scripts in chroot
+				xscript=chroot_dir+"tmp/xscript.sh"
+				print "Building file: "+xscript
+				f = open(xscript, 'w')
+				f.write("#/bin/bash\n\n")
+				
+				f.write("export DISPLAY="+XServerIP+display+"\n")
+				
+				f.write("setxkbmap es\n")
+				f.write("export HOME=/root\n")
+				
+				if (not (command=="start_session")): # unallow metacity in session
+					f.write("metacity --display "+XServerIP+display+" &\n")
+
+				# Avoid shuddown
+				f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
+				
+				f.write("echo \"alias shutdown='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias halt='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias init='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias telinit='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+				f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+
+				if (command=="x-editor"):
+					print "Loading x-editor, display will be: "+XServerIP+display
+					f.write("dbus-launch --exit-with-session scite\n")
+					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xeditor.sh"])
+				elif (command=="synaptic"):
+					print "Loading synaptic, display will be: "+XServerIP+display
+					f.write("dbus-launch --exit-with-session synaptic\n")
+					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xsynaptic.sh"])
+				elif (command=="terminal"):
+					print "Loading terminal, display will be: "+XServerIP+display
+					f.write("dbus-launch --exit-with-session xterm\n")
+				
+				elif (command=="start_session"):
+					print "Starting session, display will be: "+XServerIP+display
+					f.write("dbus-launch --exit-with-session gnome-session --session=gnome-fallback\n")
+				
+					
+				else:
+					print "Running user command: "+command
+					f.write(command)
+
+				f.close()
+				
+				#Once scripts will be prepared, let's run it				
+				subprocess.Popen(["sudo", "chmod","+x", xscript])
+
+				
+				# yes... dirty code, but runs...
+				
+				# if command was session, we have to unlink /home and /etc
+				if (command=="start_session"):
+					output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+					subprocess.check_output(["umount","-l",chroot_dir+"/home"])
+					
+				
+				else:  # if not start session, we can allow retries
+				
+					repeat=True
+					retries=0
+					output=None
+					while (repeat==True):
+						try:
+							output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+							repeat=False
+						except Exception as e:
+							retries=retries+1
+							if(retries>10):
+								return {'status': False, 'msg':'Max retries exceed'}
+				
+
+			except Exception as e:
+				self.umount_chroot(chroot_dir)
+				
+				output=subprocess.check_output(["echo",str(e), ">>","/tmp/myerr"])
+				
+				if(e.__class__==subprocess.CalledProcessError):
+					return {'status': False, 'msg':' '.join(str(e).split(' ')[-1:])}
+				else:
+					
+					return {'status': False, 'msg':'[N4dChroot] '+str(e)+" EXCEPTION CLASS: "+str(e.__class__)}
+			
+			# At last leave chroot gracefully
+			
+			
+			self.umount_chroot(chroot_dir)
+			return {'status': True, 'msg':'[N4dChroot] Finished with Output: '+str(output)}
+		
+	#def run_command_on_chroot(self,chroot_dir,command)
+
 	
 	##################
 	def prepare_chroot_for_session(self, chroot_dir):

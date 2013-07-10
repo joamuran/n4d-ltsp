@@ -1,8 +1,14 @@
+n4d-ltsp (0.2.1) precise; urgency=low
+
+  * Fixed support to chroot Xserver Connection.
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Wed, 10 Jul 2013 14:16:03 +0200
+
 n4d-ltsp (0.2.0) precise; urgency=low
 
   * Manage netinstall booting.
 
- -- Jose A. Múrcia <joamuran@gmail>  Mon, 08 Jul 2013 08:33:01 +0200
+ -- Jose A. Múrcia <joamuran@gmail.com>  Mon, 08 Jul 2013 08:33:01 +0200
 
 n4d-ltsp (0.1.9) precise; urgency=low
 

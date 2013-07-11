@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.2) precise; urgency=low
+
+  * fixed lintian overrides.
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Thu, 11 Jul 2013 09:39:34 +0200
+
 n4d-ltsp (0.2.1) precise; urgency=low
 
   * Fixed support to chroot Xserver Connection.

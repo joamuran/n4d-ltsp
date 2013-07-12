@@ -60,7 +60,7 @@ class LtspClientConfig:
     '''
     A simple init method
     '''
-    self.conf_file="/var/lib/tftpboot/ltsp/lts.conf"
+    self.conf_file="/var/lib/tftpboot/ltsp/i386/lts.conf"
     self.client_list=[]
     self.default_session="gnome"
     self.default_type="thin"
@@ -71,7 +71,7 @@ class LtspClientConfig:
   def get_ltsp_conf(self):
     '''
     Returns parsed lts.conf config file
-    This file is usually /var/lib/tftpboot/ltsp/lts.conf
+    This file is usually /var/lib/tftpboot/ltsp/i386/lts.conf
     '''
     self.current_section=""
     self.current_client=None
@@ -188,7 +188,7 @@ class LtspClientConfig:
   
   def set_ltsp_conf(self, config, class_type, class_session):
     print "Going to save..."+config
-    self.new_conf_file="/var/lib/tftpboot/ltsp/lts.conf"
+    self.new_conf_file="/var/lib/tftpboot/ltsp/i386/lts.conf"
     self.template_file="/var/lib/lliurex-ltsp/templates/lts.conf"
     readlines=open(self.template_file, 'r').readlines();
     writefile=open(self.new_conf_file, 'w');

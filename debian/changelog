@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.4) precise; urgency=low
+
+  * Added lite support and fixed logging bug.
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Mon, 15 Jul 2013 14:34:35 +0200
+
 n4d-ltsp (0.2.3) precise; urgency=high
 
   * Modified ubication of lts.conf file

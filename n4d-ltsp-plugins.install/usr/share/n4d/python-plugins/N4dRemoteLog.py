@@ -56,19 +56,23 @@ class N4dRemoteLog:
     '''
     Read last line from log
     '''
-    log_name_fullpath=N4dRemoteLog.LOG_PATH+N4dRemoteLog.LOG_PREFIX+log_name+".log"
-    percent=""
-    if os.path.exists(log_name_fullpath):
-        lines = open(log_name_fullpath, 'r').readlines()
-        line=lines[len(lines)-1]
-        if (line[len(line)-1]!='%'): # If not a % return false
-          return {'status':False, 'file':''}
-        percent=(line[len(line)-4:len(line)]).replace(" ","").replace("%","");
-
-    print("*<<<*"+percent+"*>>>*")
-    
-    return {'status':True, 'file':str(percent)}
-    #return {'status':True, 'file':str(line)}
+    try:
+      log_name_fullpath=N4dRemoteLog.LOG_PATH+N4dRemoteLog.LOG_PREFIX+log_name+".log"
+      percent=""
+      if os.path.exists(log_name_fullpath):
+          lines = open(log_name_fullpath, 'r').readlines()
+          line=lines[len(lines)-1]
+          if (line[len(line)-1]!='%'): # If not a % return false
+            return {'status':False, 'file':''}
+          percent=(line[len(line)-4:len(line)]).replace(" ","").replace("%","");
+  
+      print("*<<<*"+percent+"*>>>*")
+      
+      return {'status':True, 'file':str(percent)}
+      #return {'status':True, 'file':str(line)}
+    except Exception:
+      return {'status':False, 'msg':str(e)}
+      
     
   
   

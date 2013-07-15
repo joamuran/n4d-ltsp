@@ -499,6 +499,11 @@ class LtspChroot:
 					 "img": "lliurex-musica.png",
 					 "image_file":"/opt/ltsp/images/llx-musica.img",
 					 "squashfs_dir":"/opt/ltsp/llx-musica/"},
+				"lite":{"desc":"LliureX Lite is a minimal flavour of LliureX, with XFCE Desktop and a minimal and light application set.",
+					 "name":"LliureX Lite",
+					 "img": "lliurex-lite.png",
+					 "image_file":"/opt/ltsp/images/llx-lite.img",
+					 "squashfs_dir":"/opt/ltsp/llx-lite/"},
 				"pime":{"desc":"LliureX Pime is an adaptation that has been developed for use in vocational training families of Commerce Administration and Management and Marketing. Includes a selection of applications tailored to the business-oriented programs, without educational applications for Primary and Secondary Schools, as well as applications to support teaching. For this reasons, LliureX Pime is a good candidate for those SMEs (Small and Medium Enterprises) who want to introduces in the free software, especially for the Valencian Community, as the environment is translated into Catalan and Spanish, as in other adaptations LliureX.",
 					 "name":"LliureX Pime",
 					 "img": "lliurex-pime.png",
@@ -507,15 +512,8 @@ class LtspChroot:
 					}
 		
 		ret=[]
-		'''img={"id": "tralari", "name": "tralari", "desc":"tralara",
-			   "img": "wwwww", "image_file": "aaaaaaa", "squashfs_dir":"wwwwwwww",
-			   "installed":22222.33333, "lliurex_version":"w2",
-			   "errorcode":"qwqqq", "errormsg":"eeeeee"}
 		
-		ret.append(img)
-		ret.append(img)'''
-		
-		for i in ["client", "desktop", "infantil", "musica", "pime"]:
+		for i in ["client", "desktop", "infantil", "musica", "lite", "pime"]:
 			img_id=i
 			img_name=static_values[i]["name"]
 			img_desc=static_values[i]["desc"]

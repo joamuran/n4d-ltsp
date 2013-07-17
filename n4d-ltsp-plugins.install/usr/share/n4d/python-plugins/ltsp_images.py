@@ -108,6 +108,70 @@ class LtspImage:
 		
 	#def create_desktop
 	
+	def run_Image_Command(self, command, XServerIP, display):
+		'''
+		runs command in server to work with images
+		'''
+		#import time
+		print "Performing command: "+command
+		print "Status: "+self.llx_ltsp_status
+		
+		try:	
+			# Now prepare the appropiate scripts in server
+			xscript="/tmp/image_script.sh"
+			print "Building file: "+xscript
+			f = open(xscript, 'w')
+			f.write("#/bin/bash\n\n")
+				
+			f.write("export DISPLAY="+XServerIP+display+"\n")
+				
+			f.write("setxkbmap es\n")
+			f.write("export HOME=/root\n")
+				
+			f.write("metacity --display "+XServerIP+display+" &\n")
+
+			# Avoid shuddown
+			f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
+				
+			f.write("echo \"alias shutdown='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+			f.write("echo \"alias halt='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+			f.write("echo \"alias init='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+			f.write("echo \"alias telinit='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+			f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+
+			# Writing command
+			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \""+command+"\"; read a\n")
+			f.close()
+		
+			subprocess.Popen(["sudo", "chmod","+x", xscript])
+			output=subprocess.check_output(["sudo", xscript])
+
+				
+			# yes... dirty code, but runs...
+				
+			# if command was session, we have to unlink /home and /etc
+			#repeat=True
+			#retries=0
+			#output=None
+			#while (repeat==True):
+		#		try:
+		#			output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
+		#			repeat=False
+		#		except Exception as e:
+		#			retries=retries+1
+		#			if(retries>10):
+		#				return {'status': False, 'msg':'Max retries exceed'}
+		#		
+		
+			
+						
+			return {'status': True, 'msg':'[LtspImage] img updated'}
+		except Exception as e:
+			self.llx_ltsp_status="available"
+			f.close()
+			return {'status': False, 'msg':'[LtspImage] Error'+str(e)}
+	
+	
 	def regenerate_img(self, imgchroot):
 		'''
 		Regenerates img file for chroot

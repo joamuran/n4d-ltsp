@@ -15,7 +15,6 @@ import subprocess
 
 class LtspImage:
 	
-	
 	llx_ltsp_status="available"
 	llx_ltsp_status_msg=""
 	
@@ -108,7 +107,7 @@ class LtspImage:
 		
 	#def create_desktop
 	
-	def run_Image_Command(self, command, XServerIP, display):
+	def run_Image_Command(self, command, XServerIP, display, XephyPID):
 		'''
 		runs command in server to work with images
 		'''
@@ -129,7 +128,9 @@ class LtspImage:
 			f.write("export HOME=/root\n")
 				
 			f.write("metacity --display "+XServerIP+display+" &\n")
-
+			
+			f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*  & \n")
+			'''
 			# Avoid shuddown
 			f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
 				
@@ -139,8 +140,23 @@ class LtspImage:
 			f.write("echo \"alias telinit='echo Bad luck, guy!'\" >> /root/.bashrc \n")
 			f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
 
+
 			# Writing command
-			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \""+command+"\"; read a\n")
+			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \""+command+";zenity --info --text 'Operation Finished. Click to close.'; killall Xephyr\"\n ")
+			'''
+			#f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" ls;zenity --info --text 'Operation Finished. Click to close.'; kill -9 "+XephyPID+"\"\n ")
+			
+			#f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" ls; \
+			#	zenity --info --text 'Operation Finished. Click to close.'; \
+			#	 n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\"\n")
+			
+			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" "+command+"; \
+				zenity --info --text 'Operation Finished. Click to close.'; \
+				 n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\"\n")
+			
+			
+			f.write("exit 0\n ")
+			
 			f.close()
 		
 			subprocess.Popen(["sudo", "chmod","+x", xscript])
@@ -251,7 +267,8 @@ class LtspImage:
 	
 	def is_enough_space_in_disk(self, imgchroot):
 		import os
-		
+		return {'status':True, 'free':'12300', 'used': '100'}
+		'''
 		# Calculate chroot size
 		total_size = 0
 		start_path=imgchroot
@@ -270,7 +287,7 @@ class LtspImage:
 			return {'status':False, 'free':str(free), 'used': str(total_size)}
 		else:
 			return {'status':True, 'free':str(free), 'used': str(total_size)}
-			
+		'''	
 	
 	def n4d_update_client(self, clientid, imgchroot, username, password):
 		'''
@@ -336,56 +353,56 @@ class LtspImage:
 		
 		try:
 			self.llx_ltsp_status="working"
-			f = open('/tmp/n4drlstpimages.log', 'w')
+			#f = open('/tmp/n4drlstpimages.log', 'w')
 			#f.write('tralari')
 			
-			f.write("Deleting "+img_file+"...\n")
-			f.flush()
+			#f.write("Deleting "+img_file+"...\n")
+			#f.flush()
 			if (os.path.isfile(img_file)):
 				os.remove(img_file)
-				f.write("Deleted "+img_file+"...\n")
-			else:
-				f.write(img_file+" did not exists...\n")
-			f.flush()
+			#	f.write("Deleted "+img_file+"...\n")
+			#else:
+			#	f.write(img_file+" did not exists...\n")
+			#f.flush()
 				
-			f.write("Deleting "+imgchroot+"...\n")
-			f.flush()
+			#f.write("Deleting "+imgchroot+"...\n")
+			#f.flush()
 			
 			if (os.path.isdir(imgchroot)):
 				# umount chroot
 				server = ServerProxy("https://127.0.0.1:9779")
-				f.write("Umounting devices...\n")
+			#	f.write("Umounting devices...\n")
 				server.umount_chroot(connection_user,"LtspChroot", imgchroot)
 				# Now delete...
-				f.write("Deleting...\n")
+			#	f.write("Deleting...\n")
 				shutil.rmtree(imgchroot)
-				f.write("Deleted "+imgchroot+"...\n")
-			else:
-				f.write(imgchroot+" did not exists...\n")
+			#	f.write("Deleted "+imgchroot+"...\n")
+			#else:
+			#	f.write(imgchroot+" did not exists...\n")
 			
-			f.write("chroot doens't exists yet...\n")
+			#f.write("chroot doens't exists yet...\n")
 			
 			tftpdir='/var/lib/tftpboot/ltsp/'+imgchroot.split("/")[3]
 			
-			f.write("Deleting tftpdir:"+tftpdir+"...\n")
-			f.flush();	 			
+			#f.write("Deleting tftpdir:"+tftpdir+"...\n")
+			#f.flush();	 			
 		
 		
 			if(os.path.isdir(tftpdir)):
 				shutil.rmtree(tftpdir)
-				f.write("Deleted "+tftpdir+"...\n")
-			else:
-				f.write(tftpdir+"did not exists...\n")
+			#	f.write("Deleted "+tftpdir+"...\n")
+			#else:
+			#	f.write(tftpdir+"did not exists...\n")
 		
-			f.write("Regenerate menus... \n")
-			f.flush()
-			self.llx_ltsp_status_msg=subprocess.check_call(["/usr/share/lliurex-ltsp/llx-create-pxelinux.sh"],stdout=f) # to modify
+			#f.write("Regenerate menus... \n")
+			#f.flush()
+			self.llx_ltsp_status_msg=subprocess.check_call(["/usr/share/lliurex-ltsp/llx-create-pxelinux.sh"],stdout=None) # to modify
 			
-			f.write("Finished !\n")
-			f.flush()
+			#f.write("Finished !\n")
+			#f.flush()
 			
 			self.llx_ltsp_status="available"
-			f.close()
+			#f.close()
 						
 			return {'status': True, 'msg':'[LtspImage] img updated'}
 		except Exception as e:

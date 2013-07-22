@@ -11,6 +11,7 @@
 # Libraries
 import sys
 import subprocess
+import shutil
 
 
 class LtspChroot:
@@ -255,7 +256,7 @@ class LtspChroot:
 	
 	'''
 	
-	def run_command_on_chroot(self,chroot_dir,command,XServerIP,display):
+	def run_command_on_chroot(self,chroot_dir,command,XServerIP,display,XephyPID):
 		'''
 		Possible commands:
 			* x-editor
@@ -263,6 +264,7 @@ class LtspChroot:
 			* terminal
 		'''
 		#import os
+		import subprocess
 	
 		output=""
 		if not self.test_chroot(chroot_dir)["status"] :
@@ -273,8 +275,21 @@ class LtspChroot:
 			# First prepare chroot
 			self.prepare_chroot_for_run(chroot_dir)
 			
+			# Prepare to maximize windows into Xephyr
+		
+			try:	
+				print ("Checking: "+chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")
+				if (os.path.isdir(chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")==False):
+					os.makedirs(chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")
+					#subprocess.check_output(["mkdir","-p",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie"])
+					
+				#subprocess.check_output(["cp","/var/lib/lliurex-ltsp/templates/devilspie/*.ds",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"])
+				copyfile("/var/lib/lliurex-ltsp/templates/devilspie/*.ds", chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/")
+			except Exception as e:
+				print ("Exception: "+str(e))
+				
 			# Then Prepare to run X applications
-			self.prepare_X11_applications(chroot_dir)
+			# Unused self.prepare_X11_applications(chroot_dir)
 			
 			try:
 				import time
@@ -291,6 +306,8 @@ class LtspChroot:
 				
 				if (not (command=="start_session")): # unallow metacity in session
 					f.write("metacity --display "+XServerIP+display+" &\n")
+					f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*  & \n")
+
 
 				# Avoid shuddown
 				f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
@@ -303,25 +320,28 @@ class LtspChroot:
 
 				if (command=="x-editor"):
 					print "Loading x-editor, display will be: "+XServerIP+display
-					f.write("dbus-launch --exit-with-session scite\n")
+					f.write("dbus-launch --exit-with-session scite")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xeditor.sh"])
 				elif (command=="synaptic"):
 					print "Loading synaptic, display will be: "+XServerIP+display
-					f.write("dbus-launch --exit-with-session synaptic\n")
+					f.write("dbus-launch --exit-with-session synaptic")
 					#subprocess.check_output(["chroot",chroot_dir, "/usr/share/lliurex-ltsp-client/Xsynaptic.sh"])
 				elif (command=="terminal"):
 					print "Loading terminal, display will be: "+XServerIP+display
-					f.write("dbus-launch --exit-with-session xterm\n")
+					f.write("dbus-launch --exit-with-session xterm")
 				
 				elif (command=="start_session"):
 					print "Starting session, display will be: "+XServerIP+display
 					f.write("dbus-launch --exit-with-session gnome-session --session=gnome-fallback\n")
-				
 					
 				else:
 					print "Running user command: "+command
 					f.write(command)
 
+
+				if (command!="start_session"):
+					f.write("; zenity --info --text 'Click to close.'; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
+			
 				f.close()
 				
 				#Once scripts will be prepared, let's run it				

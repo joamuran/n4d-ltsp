@@ -284,7 +284,7 @@ class LtspChroot:
 					#subprocess.check_output(["mkdir","-p",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie"])
 					
 				#subprocess.check_output(["cp","/var/lib/lliurex-ltsp/templates/devilspie/*.ds",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"])
-				copyfile("/var/lib/lliurex-ltsp/templates/devilspie/*.ds", chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/")
+				shutil.copyfile("/var/lib/lliurex-ltsp/templates/devilspie/*.ds", chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/")
 			except Exception as e:
 				print ("Exception: "+str(e))
 				

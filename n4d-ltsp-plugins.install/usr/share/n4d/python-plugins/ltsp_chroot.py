@@ -12,6 +12,7 @@
 import sys
 import subprocess
 import shutil
+import os
 
 
 class LtspChroot:
@@ -269,7 +270,7 @@ class LtspChroot:
 		output=""
 		if not self.test_chroot(chroot_dir)["status"] :
 		# If not a directory...you can't do nothing more.
-			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
+			return {'status': False, 'msg':'[N4dChroot] Directory not exists'}
 		
 		else: 
 			# First prepare chroot
@@ -281,10 +282,11 @@ class LtspChroot:
 				print ("Checking: "+chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")
 				if (os.path.isdir(chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")==False):
 					os.makedirs(chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")
-					#subprocess.check_output(["mkdir","-p",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie"])
-					
-				#subprocess.check_output(["cp","/var/lib/lliurex-ltsp/templates/devilspie/*.ds",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"])
-				shutil.copyfile("/var/lib/lliurex-ltsp/templates/devilspie/*.ds", chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/")
+				
+				for files in os.listdir("/var/lib/lliurex-ltsp/templates/devilspie/"):
+					print ("[LTSP_CHROOT:run_command_on_chroot] Copying /var/lib/lliurex-ltsp/templates/devilspie/"+files +" to "+ chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"+files)
+					shutil.copyfile("/var/lib/lliurex-ltsp/templates/devilspie/"+files, chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"+files)
+
 			except Exception as e:
 				print ("Exception: "+str(e))
 				

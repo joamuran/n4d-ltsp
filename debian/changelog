@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.5) precise; urgency=low
+
+  * Porting remote log to remote Xephyr window.
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Thu, 05 Sep 2013 08:54:03 +0200
+
 n4d-ltsp (0.2.4) precise; urgency=low
 
   * Added lite support and fixed logging bug.

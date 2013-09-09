@@ -159,8 +159,11 @@ class LtspImage:
 			
 			f.close()
 		
-			subprocess.Popen(["sudo", "chmod","+x", xscript])
-			output=subprocess.check_output(["sudo", xscript])
+			#subprocess.Popen(["sudo", "chmod","+x", xscript])
+			#output=subprocess.check_output(["sudo", xscript])
+			subprocess.Popen(["chmod","+x", xscript])
+			output=subprocess.check_output(["bash", xscript])
+
 
 				
 			# yes... dirty code, but runs...

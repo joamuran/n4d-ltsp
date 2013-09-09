@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.6) precise; urgency=low
+
+  * fixed bug in ltsp_image to run xscript image_script.sh
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Mon, 09 Sep 2013 11:53:47 +0200
+
 n4d-ltsp (0.2.5) precise; urgency=low
 
   * Porting remote log to remote Xephyr window.

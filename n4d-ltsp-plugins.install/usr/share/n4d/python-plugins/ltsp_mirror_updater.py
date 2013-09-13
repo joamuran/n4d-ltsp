@@ -22,7 +22,7 @@ class LtspMirrorUpdater:
 		pass    
 	#def init
 
-	def launchLliurexMirrorGui(self,XServerIP,display):
+	def launchLliurexMirrorGui(self,XServerIP,display,XephyPID):
 		try:
 			import time
 			# Now prepare the appropiate scripts in chroot
@@ -32,10 +32,15 @@ class LtspMirrorUpdater:
 			f.write("#/bin/bash\n\n")
 			#f.write("shopt -s expand_aliases\n")
 			#f.write("sudo su\n")
-			f.write("export DISPLAY="+XServerIP+display+"\n")
-			f.write("setxkbmap es\n")
+			f.write("export DISPLAY="+XServerIP+display+"\n")			
 			f.write("metacity --display "+display+" &\n")
-			f.write("sudo dbus-launch --exit-with-session lliurex-mirror-gui\n")
+			f.write("setxkbmap es\n")
+			print (XephyPID)
+			f.write("sudo dbus-launch --exit-with-session lliurex-mirror-gui; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+str(XephyPID)+"\n")
+			
+			#f.write("sudo dbus-launch --exit-with-session lliurex-mirror-gui; zenity --info --text 'Click to close.'; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+str(XephyPID)+"\n")
+			#f.write("sudo dbus-launch --exit-with-session lliurex-mirror-gui\n")
+			
 			f.write("exit 0\n")
 			f.close()
 			

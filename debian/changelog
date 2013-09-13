@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.7) precise; urgency=low
+
+  * Minor changes
+
+ -- Jose A. Múrcia <joamuran@gmail.com>  Fri, 13 Sep 2013 13:01:05 +0200
+
 n4d-ltsp (0.2.6) precise; urgency=low
 
   * fixed bug in ltsp_image to run xscript image_script.sh

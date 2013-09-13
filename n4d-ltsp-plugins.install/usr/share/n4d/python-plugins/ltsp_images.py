@@ -123,13 +123,15 @@ class LtspImage:
 			f.write("#/bin/bash\n\n")
 				
 			f.write("export DISPLAY="+XServerIP+display+"\n")
-				
-			f.write("setxkbmap es\n")
+			#f.write("echo 1\n")
+			#f.write("echo 2\n")
 			f.write("export HOME=/root\n")
-				
+			#f.write("echo 3\n")				
 			f.write("metacity --display "+XServerIP+display+" &\n")
-			
+			#f.write("echo 4\n")
 			f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*  & \n")
+			#f.write("echo 5\n")
+			f.write("setxkbmap es\n")
 			'''
 			# Avoid shuddown
 			f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
@@ -149,10 +151,11 @@ class LtspImage:
 			#f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" ls; \
 			#	zenity --info --text 'Operation Finished. Click to close.'; \
 			#	 n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\"\n")
-			
+			f.write("echo 6\n")
 			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" "+command+"; \
 				zenity --info --text 'Operation Finished. Click to close.'; \
 				 n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\"\n")
+			f.write("echo 7\n")
 			
 			
 			f.write("exit 0\n ")
@@ -162,8 +165,8 @@ class LtspImage:
 			#subprocess.Popen(["sudo", "chmod","+x", xscript])
 			#output=subprocess.check_output(["sudo", xscript])
 			subprocess.Popen(["chmod","+x", xscript])
-			output=subprocess.check_output(["bash", xscript])
-
+			output=subprocess.check_output(["bash", "/tmp/image_script.sh"])
+			#output=subprocess.check_output(["eval",xscript])
 
 				
 			# yes... dirty code, but runs...

@@ -270,7 +270,7 @@ class LtspChroot:
 		output=""
 		if not self.test_chroot(chroot_dir)["status"] :
 		# If not a directory...you can't do nothing more.
-			return {'status': False, 'msg':'[N4dChroot] Directory not exists'}
+			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
 		
 		else: 
 			# First prepare chroot
@@ -282,11 +282,12 @@ class LtspChroot:
 				print ("Checking: "+chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")
 				if (os.path.isdir(chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")==False):
 					os.makedirs(chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie")
-				
+					#subprocess.check_output(["mkdir","-p",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie"])
+					
+				#subprocess.check_output(["cp","/var/lib/lliurex-ltsp/templates/devilspie/*.ds",chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"])
 				for files in os.listdir("/var/lib/lliurex-ltsp/templates/devilspie/"):
 					print ("[LTSP_CHROOT:run_command_on_chroot] Copying /var/lib/lliurex-ltsp/templates/devilspie/"+files +" to "+ chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"+files)
 					shutil.copyfile("/var/lib/lliurex-ltsp/templates/devilspie/"+files, chroot_dir+"var/lib/lliurex-ltsp/templates/devilspie/"+files)
-
 			except Exception as e:
 				print ("Exception: "+str(e))
 				
@@ -303,7 +304,6 @@ class LtspChroot:
 				
 				f.write("export DISPLAY="+XServerIP+display+"\n")
 				
-				f.write("setxkbmap es\n")
 				f.write("export HOME=/root\n")
 				
 				if (not (command=="start_session")): # unallow metacity in session
@@ -319,6 +319,8 @@ class LtspChroot:
 				f.write("echo \"alias init='echo Bad luck, guy!'\" >> /root/.bashrc \n")
 				f.write("echo \"alias telinit='echo Bad luck, guy!'\" >> /root/.bashrc \n")
 				f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
+
+				f.write("setxkbmap es\n")
 
 				if (command=="x-editor"):
 					print "Loading x-editor, display will be: "+XServerIP+display
@@ -342,7 +344,8 @@ class LtspChroot:
 
 
 				if (command!="start_session"):
-					f.write("; zenity --info --text 'Click to close.'; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
+					f.write("; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
+					#f.write("; zenity --info --text 'Click to close.'; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
 			
 				f.close()
 				

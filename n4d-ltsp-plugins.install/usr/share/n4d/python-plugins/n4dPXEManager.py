@@ -29,20 +29,27 @@ class n4dPXEManager:
 
    def setImageDefaultBoot(self, default, timeout):
       f=open("/var/lib/tftpboot/ltsp/pxelinux.cfg/default", "r")
+      
+      f2=open("/tmp/default", "w")
+      
       lines=(f.read()).split("\n")
       
       for line in lines:
          if ("TIMEOUT " in line.upper()):
-            print "TIMEOUT "+timeout
+            f2.write("TIMEOUT "+timeout+"\n")
+            #print "TIMEOUT "+timeout
          else:
             if not("MENU DEFAULT" in line.upper()):
-               print line
+               f2.write(line+"\n")
+               #print line
             
             if (("LABEL" in line.upper())and not("MENU" in line.upper()) and ("Instal.la LliureX en aquest ordinador") not in line):
                if (line.replace("LABEL ", "")==default):
-                  print "    MENU default"
-         
-         
+                  f2.write("    MENU default\n")
+                  #print "    MENU default"
+      f.close()
+      f2.close()
+      shutil.copy("/tmp/default", "/var/lib/tftpboot/ltsp/pxelinux.cfg/default")
          
 #myselector=n4dPXEManager()
 #mylist=myselector.getImageList()

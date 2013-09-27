@@ -5,6 +5,7 @@ import shutil
 class n4dPXEManager:
    def getImageList(self):
       listimages=[]
+      default='localboot'
       timeout=60
 
       f=open("/var/lib/tftpboot/ltsp/pxelinux.cfg/default", "r")

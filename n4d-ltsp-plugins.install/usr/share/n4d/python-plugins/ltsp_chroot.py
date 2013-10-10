@@ -634,6 +634,39 @@ class LtspChroot:
 		
 		return {"images": ret}
 		
-
+def import_ltsp_tgz(self, file, chroot):
+		import tarfile
+		try:
+			xscript="/tmp/xscript.sh"
+			f = open(xscript, 'w')
+			f.write("#/bin/bash\n\n")
+			f.write("tar -xvzf "+file+" -C / \n\n")
+			
+			f.write("echo [LTSPChroot] Updating Kernels...\n")
+			f.write("ltsp-update-kernels "+chroot+"\n\n")
+			f.write("echo [LTSPChroot] Generating keys...\n")
+			f.write("ltsp-update-sshkeys\n\n")
+			f.write("echo [LTSPChroot]Updating image...\n")
+			f.write("ltsp-update-image "+chroot+"\n\n")
+			f.write("echo [LTSPChroot] Creating Menus\n")
+			f.write("/usr/share/lliurex-ltsp/llx-create-pxelinux.sh\n")
+			
+			f.write('read -p "Finished. Press Enter to close." tralari\n')
+			f.write("exit 0\n")
+			f.close()
+			
+			# Only in local server!
+			subprocess.check_output(["chmod", "+x", xscript])
+			
+			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"gnome-terminal", "-e", "/tmp/xscript.sh", "--display", ":42"])
+			
+			
+			
+			return {"status": "done"}
+		except Exception as ex:
+			exc=" Type="+str(type(ex))+" Args:"+str(ex.args)+" Except: "+str(ex);
+			
+			return {"status": exc+"*"+ret+"*"}
+	
 #class LtspChroot
 

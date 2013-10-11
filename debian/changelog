@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.9) precise; urgency=low
+
+  * Added capabilities to import and export images.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Fri, 11 Oct 2013 11:48:04 +0200
+
 n4d-ltsp (0.2.8) precise; urgency=low
 
   * Added PXE Boot Menu Configuration

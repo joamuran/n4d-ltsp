@@ -656,11 +656,8 @@ class LtspChroot:
 			f.close()
 			
 			# Only in local server!
-			subprocess.check_output(["chmod", "+x", xscript])
-			
+			subprocess.check_output(["chmod", "+x", xscript])			
 			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"gnome-terminal", "-e", "/tmp/xscript.sh", "--display", ":42"])
-			
-			
 			
 			return {"status": "done"}
 		except Exception as ex:
@@ -668,5 +665,25 @@ class LtspChroot:
 			
 			return {"status": exc+"*"+ret+"*"}
 	
+	def export_ltsp_tgz(self, file, chroot):
+		import tarfile
+		try:
+			xscript="/tmp/xscript.sh"
+			f = open(xscript, 'w')
+			f.write("#/bin/bash\n\n")
+			f.write("tar -cvzf "+file+".tgz --one-file-system --exclude=/lost+found /opt/ltsp/llx-"+chroot+"\n")
+			f.write('read -p "Finished. Press Enter to close." tralari\n')
+			f.write("exit 0\n")
+			f.close()
+			
+			subprocess.check_output(["chmod", "+x", xscript])
+			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"gnome-terminal", "-e", "/tmp/xscript.sh", "--display", ":42"])
+			
+			return {"status": "done"}
+		except Exception as ex:
+			exc=" Type="+str(type(ex))+" Args:"+str(ex.args)+" Except: "+str(ex);			
+			return {"status": exc+"*"+ret+"*"}
+	
+
 #class LtspChroot
 

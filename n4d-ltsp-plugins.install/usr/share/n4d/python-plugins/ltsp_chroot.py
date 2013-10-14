@@ -634,7 +634,7 @@ class LtspChroot:
 		
 		return {"images": ret}
 		
-def import_ltsp_tgz(self, file, chroot):
+	def import_ltsp_tgz(self, file, chroot):
 		import tarfile
 		try:
 			xscript="/tmp/xscript.sh"

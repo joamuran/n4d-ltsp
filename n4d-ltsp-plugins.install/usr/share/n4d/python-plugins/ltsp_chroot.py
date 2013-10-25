@@ -334,6 +334,11 @@ class LtspChroot:
 					print "Loading terminal, display will be: "+XServerIP+display
 					f.write("dbus-launch --exit-with-session xterm")
 				
+				elif (command=="xfce"):
+					print "Installing XFCE, display will be: "+XServerIP+display
+					f.write(" echo 'lliurex-cdd-xdesktop install' > /tmp/installxfce\n")
+					f.write("dbus-launch --exit-with-session sudo synaptic --hide-main-window --non-interactive --set-selections-file /tmp/installxfce\n")
+				
 				elif (command=="start_session"):
 					print "Starting session, display will be: "+XServerIP+display
 					f.write("dbus-launch --exit-with-session gnome-session --session=gnome-fallback\n")

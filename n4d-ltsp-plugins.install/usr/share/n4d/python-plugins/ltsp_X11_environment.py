@@ -48,8 +48,8 @@ class LTSPX11Environment:
 			self.RemoveXephyrProcess(display)
 			# Display on display
 			pid=subprocess.Popen(["Xephyr","-ac","-screen",screen,display])
-			subprocess.Popen(["metacity", "--display",display])
-			#subprocess.Popen(["openbox", "--display",display])
+			#subprocess.Popen(["metacity", "--display",display])
+			subprocess.Popen(["openbox"])
 			
 			return pid
 		except Exception as e:

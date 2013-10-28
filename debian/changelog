@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.10) precise; urgency=low
+
+  * Enhaced launch applications into chroot.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Mon, 28 Oct 2013 12:16:09 +0100
+
 n4d-ltsp (0.2.9) precise; urgency=low
 
   * Added capabilities to import and export images.

@@ -306,8 +306,8 @@ class LtspChroot:
 				
 				f.write("export HOME=/root\n")
 				
-				if (not (command=="start_session")): # unallow metacity in session
-					#f.write("metacity --display "+XServerIP+display+" &\n")
+				if (not (command=="start_session")): # unallow openbox in session
+					f.write("openbox &\n")
 					f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*  & \n")
 
 

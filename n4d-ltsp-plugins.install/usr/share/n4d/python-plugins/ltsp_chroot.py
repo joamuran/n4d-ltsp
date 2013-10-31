@@ -307,8 +307,9 @@ class LtspChroot:
 				f.write("export HOME=/root\n")
 				
 				if (not (command=="start_session")): # unallow openbox in session
-					f.write("openbox &\n")
-					f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*  & \n")
+					#f.write("openbox &\n")
+					f.write("[ -x /usr/bin/openbox] && openbox || metacity &\n")					
+					f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*.ds  & \n")
 
 
 				# Avoid shuddown
@@ -321,6 +322,7 @@ class LtspChroot:
 				f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
 
 				f.write("setxkbmap es\n")
+				f.write("sleep 3\n")
 
 				if (command=="x-editor"):
 					print "Loading x-editor, display will be: "+XServerIP+display

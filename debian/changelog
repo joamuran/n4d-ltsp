@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.11) precise; urgency=high
+
+  * Added 64 bit support
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Tue, 05 Nov 2013 12:56:18 +0100
+
 n4d-ltsp (0.2.10) precise; urgency=low
 
   * Enhaced launch applications into chroot.

@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.12) precise; urgency=low
+
+  * Added support to clean PXE menus.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Wed, 06 Nov 2013 14:18:39 +0100
+
 n4d-ltsp (0.2.11) precise; urgency=high
 
   * Added 64 bit support

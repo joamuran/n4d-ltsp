@@ -723,6 +723,36 @@ class LtspChroot:
 			exc=" Type="+str(type(ex))+" Args:"+str(ex.args)+" Except: "+str(ex);			
 			return {"status": exc+"*"+ret+"*"}
 	
+	def check_PXE_menu(self):
+		a=self.get_json_images()
+		ret=[]
+		
+		for image in a["images"]:
+			if (image["errorcode"]!=None):
+				tftpboot_dir="/var/lib/tftpboot/ltsp/llx-"+image["id"]
+				if os.path.isdir(tftpboot_dir):
+					dictimage={"image":image["id"], "image_file":image["image_file"], "squashfs_dir":image["squashfs_dir"], "errorcode": image["errorcode"], "tftpboot_dir":"/var/lib/tftpboot/ltsp/llx-"+image["id"]}
+					ret.append(dictimage)
+					
+		return ret
+		#return a["images"][0]["errormsg"]
+	
+	def clean_tftpboot(self,imageliststring):
+		import ast
+		import shutil
+		print "Cleaning tftpboot"
+		for i in imageliststring:
+			print ("[LTSPChroot] Deleting "+i["tftpboot_dir"])
+			shutil.rmtree(i["tftpboot_dir"])
+			
+		print ("Regenerate menus...")
+		subprocess.check_output(["/usr/share/lliurex-ltsp/llx-create-pxelinux.sh"])
+			
+		
+		#imagelist=ast.literal_eval(imageliststring)
+		#for image in imagelist:
+		#	print "\nimage:"+image
+		pass
 
 #class LtspChroot
 

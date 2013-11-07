@@ -726,14 +726,19 @@ class LtspChroot:
 	def check_PXE_menu(self):
 		a=self.get_json_images()
 		ret=[]
-		
 		for image in a["images"]:
+			print str(image["id"])+"-"+str(image["errorcode"])
+			tftpboot_dir="/var/lib/tftpboot/ltsp/llx-"+image["id"]
 			if (image["errorcode"]!=None):
-				tftpboot_dir="/var/lib/tftpboot/ltsp/llx-"+image["id"]
 				if os.path.isdir(tftpboot_dir):
 					dictimage={"image":image["id"], "image_file":image["image_file"], "squashfs_dir":image["squashfs_dir"], "errorcode": image["errorcode"], "tftpboot_dir":"/var/lib/tftpboot/ltsp/llx-"+image["id"]}
 					ret.append(dictimage)
-					
+				else:
+					print tftpboot_dir+" does not exists"
+			else:
+				if (os.path.isdir(tftpboot_dir)and not(os.path.isfile(image["image_file"]))):
+					dictimage={"image":image["id"], "image_file":image["image_file"], "squashfs_dir":image["squashfs_dir"], "errorcode": image["errorcode"], "tftpboot_dir":"/var/lib/tftpboot/ltsp/llx-"+image["id"]}
+					ret.append(dictimage)
 		return ret
 		#return a["images"][0]["errormsg"]
 	

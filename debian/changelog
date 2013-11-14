@@ -1,3 +1,9 @@
+n4d-ltsp (0.2.13) precise; urgency=low
+
+  * Fixed bug in support for PXE menus.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Thu, 14 Nov 2013 14:07:54 +0100
+
 n4d-ltsp (0.2.12) precise; urgency=low
 
   * Added support to clean PXE menus.

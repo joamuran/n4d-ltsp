@@ -742,21 +742,20 @@ class LtspChroot:
 		return ret
 		#return a["images"][0]["errormsg"]
 	
-	def clean_tftpboot(self,imageliststring):
+	def clean_tftpboot(self,imagelist):
 		import ast
 		import shutil
-		print "Cleaning tftpboot"
-		for i in imageliststring:
+		print "[LTSPChroot] Cleaning tftpboot"
+		#print "Length is "+str(len(imagelist))
+		print imagelist
+
+		for i in imagelist:
 			print ("[LTSPChroot] Deleting "+i["tftpboot_dir"])
 			shutil.rmtree(i["tftpboot_dir"])
 			
-		print ("Regenerate menus...")
+		print ("[LTSPChroot]Regenerate menus...")
 		subprocess.check_output(["/usr/share/lliurex-ltsp/llx-create-pxelinux.sh"])
 			
-		
-		#imagelist=ast.literal_eval(imageliststring)
-		#for image in imagelist:
-		#	print "\nimage:"+image
 		pass
 
 #class LtspChroot

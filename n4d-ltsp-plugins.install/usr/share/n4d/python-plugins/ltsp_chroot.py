@@ -13,6 +13,8 @@ import sys
 import subprocess
 import shutil
 import os
+import ast
+from xmlrpclib import *
 
 
 class LtspChroot:
@@ -557,7 +559,7 @@ class LtspChroot:
 					 "image_file":"/opt/ltsp/images/llx-infantil-64.img",
 					 "squashfs_dir":"/opt/ltsp/llx-infantil-64/"},
 				"musica-64":{"desc":"LliureX Music the adaptation for multimedia computers with specific software needs for audio, video and multimedia.",
-					 "name":"LliureX Music",
+					 "name":"LliureX Music 64 Bit",
 					 "img": "lliurex-musica.png",
 					 "image_file":"/opt/ltsp/images/llx-musica-64.img",
 					 "squashfs_dir":"/opt/ltsp/llx-musica-64/"},
@@ -576,8 +578,22 @@ class LtspChroot:
 					}
 		
 		ret=[]
-		
-		for i in ["client", "desktop", "infantil", "musica", "lite", "pime","client-64", "desktop-64", "infantil-64", "musica-64", "lite-64", "pime-64"]:
+
+		clientlist32=["client", "desktop", "infantil", "musica", "lite", "pime"]
+		clientlist64=["client-64", "desktop-64", "infantil-64", "musica-64", "lite-64", "pime-64"]
+		clientlist=[]
+
+		# Getting mirror architectures
+		server = ServerProxy("https://127.0.0.1:9779")
+		mirror32bit=server.is_mirror_32_available("","LliurexMirrorNonGtk")
+		mirror64bit=server.is_mirror_64_available("","LliurexMirrorNonGtk")
+
+		if (ast.literal_eval(mirror32bit)['status']=='True'):
+			clientlist=clientlist+clientlist32
+		if (ast.literal_eval(mirror64bit)['status']=='True'):
+			clientlist=clientlist+clientlist64
+
+		for i in clientlist:
 			img_id=i
 			img_name=static_values[i]["name"]
 			img_desc=static_values[i]["desc"]

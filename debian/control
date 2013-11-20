@@ -8,7 +8,7 @@ Standards-Version: 3.9.3
 
 Package: n4d-ltsp-plugins
 Architecture: all
-Depends: ${misc:Depends}, lliurex-ltsp (>= 0.27), xserver-xephyr
+Depends: ${misc:Depends}, lliurex-ltsp (>= 0.27), xserver-xephyr, lliurex-mirror-n4d-server (>= 18.5)
 Description: Contains n4d-ltsp-plugins
  This package contains the : n4d-ltsp-plugins 
  resources.

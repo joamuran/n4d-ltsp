@@ -99,6 +99,12 @@ class LtspChroot:
 			ret=subprocess.check_output(["mount","-o","bind","/dev",chroot_dir+"/dev"])
 			# Mount /dev/pts
 			ret=subprocess.check_output(["mount","-o","bind","/dev/pts",chroot_dir+"/dev/pts"])
+
+			## Mount extra folders from etc
+			ret=subprocess.check_output(["mount","-o","bind","/etc/hosts",chroot_dir+"/etc/hosts"])
+			ret=subprocess.check_output(["mount","-o","bind","/etc/ld.so.conf.d",chroot_dir+"/etc/ld.so.conf.d"])
+			ret=subprocess.check_output(["mount","-o","bind","/etc/nsswitch.conf",chroot_dir+"/etc/nsswitch.conf"])
+
 			
 			
 			return {'status': True, 'msg':'[N4dChroot] All is mounted'}
@@ -125,6 +131,12 @@ class LtspChroot:
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev/pts"])
 			# Mount /dev
 			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
+
+			# Umount /etc
+			ret=subprocess.check_output(["umount","-l",chroot_dir+"/etc/hosts"])
+			ret=subprocess.check_output(["umount","-l",chroot_dir+"/etc/ld.so.conf.d"])
+			ret=subprocess.check_output(["umount","-l",chroot_dir+"/etc/nsswitch.conf"])
+
 			
 			return {'status': True, 'msg':'[N4dChroot] All is umounted'}
 	#def umount_chroot(self,chroot_dir)
@@ -259,7 +271,21 @@ class LtspChroot:
 	
 	'''
 	
-	def run_command_on_chroot(self,chroot_dir,command,XServerIP,display,XephyPID):
+	#def run_command_on_chroot(self,chroot_dir,command,XServerIP,display,XephyPID):
+
+	def run_command_on_chroot(self,chroot_dir,command,XServerIP,screen):
+
+		# Check if lliurex-ltsp-client version has xscript installed
+		try:
+			if (os.path.isfile(chroot_dir+"/usr/sbin/xscript.sh") and (command!="start_session")):
+				return self.new_run_command_on_chroot(chroot_dir,command,XServerIP, screen)
+			else:
+				return self.old_run_command_on_chroot(chroot_dir,command,XServerIP, screen)
+		except Exception as e:
+			print "EXCEPTION:"+str(e)
+
+
+	def new_run_command_on_chroot(self,chroot_dir,command,XServerIP,screen):
 		'''
 		Possible commands:
 			* x-editor
@@ -268,6 +294,116 @@ class LtspChroot:
 		'''
 		#import os
 		import subprocess
+	
+		output=""
+		if not self.test_chroot(chroot_dir)["status"] :
+		# If not a directory...you can't do nothing more.
+			return {'status': False, 'msg':'[N4dChroot] Directory not existent'}
+		
+		else: 
+			# First prepare chroot
+			self.prepare_chroot_for_run(chroot_dir)
+						
+			try:
+				import time
+				# Now prepare the appropiate scripts in chroot
+				xscript=chroot_dir+"/usr/sbin/xscript.sh"
+				#shutil.copyfile("/tmp/xscript.sh", xscript)
+				# CAUTION WITH SESSION!!!
+				#Once scripts will be prepared, let's run it
+				  #while (not(os.path.exists(xscript))):
+				  #	print ("[LTSPCexithroot] Waiting for xscript.sh available")
+				
+				#subprocess.Popen(["sudo", "chmod","+x", xscript])
+				
+				# yes... dirty code, but runs...
+				
+				# if command was session, we have to unlink /home and /etc
+
+				if (command=="x-editor"):
+					command="scite"
+				elif (command=="terminal"):
+					command="gnome-terminal"				
+				elif (command=="xfce"):
+					f = open(chroot_dir+"/tmp/installxfce", 'w')
+					f.write("lliurex-cdd-xdesktop install\n")
+					f.close()
+					command="apt-get update; synaptic --hide-main-window --non-interactive --set-selections-file /tmp/installxfce"
+				
+				## Note: Sessionns will be managed by old method
+				else:
+					print "Running user command: "+command
+					#f.write(command)
+				print (os.path.exists(xscript))
+				print str(os.stat(xscript))
+				#output=subprocess.check_output(["chroot",chroot_dir, "bash","/tmp/xscript.sh ",command])
+				#output=subprocess.check_output(["chroot",chroot_dir, "/tmp/litescript.sh ",command])
+				#output=subprocess.check_output(["chroot",chroot_dir, xscript])
+				#print "bbbbbbbbbbbbbbbbbbbbb "+output
+					
+
+				if (command=="start_session"):
+					output=subprocess.check_output(["chroot",chroot_dir, "dbus-launch","--exit-with-session","gnome-terminal", "/usr/sbin/xscript.sh", command, XServerIP])
+					subprocess.check_output(["umount","-l",chroot_dir+"/home"])
+					
+				else:  # if not start session, we can allow retries
+				
+					repeat=True
+					retries=0
+					output=None
+					while (repeat==True):
+						try:
+							try:
+								output=subprocess.check_output(["chroot",chroot_dir, "bash","/usr/sbin/xscript.sh",command, XServerIP])
+								print str(output)
+							except Exception as e:	
+								print "EXCEPT:"+str(e)
+				
+							repeat=False
+						except Exception as e:
+							retries=retries+1
+							if(retries>10):
+								self.umount_chroot(chroot_dir)
+								return {'status': False, 'msg':'Max retries exceed'}
+				
+
+			except Exception as e:
+				self.umount_chroot(chroot_dir)
+				
+				output=subprocess.check_output(["echo",str(e), ">>","/tmp/myerr"])
+				
+				if(e.__class__==subprocess.CalledProcessError):
+					return {'status': False, 'msg':' '.join(str(e).split(' ')[-1:])}
+				else:
+					
+					return {'status': False, 'msg':'[N4dChroot] '+str(e)+" EXCEPTION CLASS: "+str(e.__class__)}
+			
+			# At last leave chroot gracefully
+			
+			
+			self.umount_chroot(chroot_dir)
+			return {'status': True, 'msg':'[N4dChroot] Finished with Output: '+str(output)}
+	
+
+	
+	#def old_run_command_on_chroot(self,chroot_dir,command,XServerIP,display,XephyPID):
+	def old_run_command_on_chroot(self,chroot_dir,command,XServerIP, screen):
+		'''
+		Possible commands:
+			* x-editor
+			* synaptic
+			* terminal
+		'''
+		#import os
+		import subprocess
+
+
+		# Let's request a generic Xephyr window
+
+		server = ServerProxy("https://"+str(XServerIP)+":9779")
+		proc=server.xenv_prepare_X11_applications_on_chroot("","ltspClientXServer", command, screen)
+		xeppid=proc[0]['pid']
+		display=proc[1]
 	
 		output=""
 		if not self.test_chroot(chroot_dir)["status"] :
@@ -353,7 +489,8 @@ class LtspChroot:
 
 
 				if (command!="start_session"):
-					f.write("; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
+					f.write("; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+str(xeppid)+"\n")
+					#f.write("; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
 					#f.write("; zenity --info --text 'Click to close.'; n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\n")
 			
 				f.close()
@@ -363,15 +500,12 @@ class LtspChroot:
 
 				
 				# yes... dirty code, but runs...
-				
 				# if command was session, we have to unlink /home and /etc
 				if (command=="start_session"):
 					output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
 					subprocess.check_output(["umount","-l",chroot_dir+"/home"])
-					
 				
 				else:  # if not start session, we can allow retries
-				
 					repeat=True
 					retries=0
 					output=None
@@ -386,6 +520,7 @@ class LtspChroot:
 				
 
 			except Exception as e:
+				print str(e)
 				self.umount_chroot(chroot_dir)
 				
 				output=subprocess.check_output(["echo",str(e), ">>","/tmp/myerr"])
@@ -401,7 +536,9 @@ class LtspChroot:
 			
 			self.umount_chroot(chroot_dir)
 			return {'status': True, 'msg':'[N4dChroot] Finished with Output: '+str(output)}
-		
+	
+
+
 	#def run_command_on_chroot(self,chroot_dir,command)
 
 	

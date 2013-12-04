@@ -141,6 +141,32 @@ class LtspChroot:
 			return {'status': True, 'msg':'[N4dChroot] All is umounted'}
 	#def umount_chroot(self,chroot_dir)
 
+	def force_umount_chroot(self, chroot_dir):
+		''' 
+		Wait for every dir into chroot will be umounted
+		'''
+
+		while True:
+
+			try:
+				#files=subprocess.check_output(["mount | grep none | wc -l"])
+				mounted = subprocess.Popen(('mount'), stdout=subprocess.PIPE)
+				greped = subprocess.Popen(('grep', 'opt'), stdin=mounted.stdout, stdout=subprocess.PIPE)
+				mounted.wait()
+				files=subprocess.check_output(['wc', '-l'], stdin=greped.stdout)
+				greped.wait()
+
+				if (files=="0\n"):
+					return {'status': True, 'msg':'[N4dChroot] Mounted dirs='+files}
+				else:
+					print "[LTSPChroot] Function force_umount_chroot, umounting "+chroot_dir
+					self.umount_chroot(chroot_dir)
+
+			except Exception as e:
+				return {'status': False, 'msg':'[N4dChroot] '+str(e)}
+
+
+
 	def prepare_X11_applications(self,chroot_dir):
 		'''
 		Prepare a X11 environment to run graphical apps 

@@ -1,3 +1,9 @@
+n4d-ltsp (1.0.2) precise; urgency=high
+
+  * debug bug fixed.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Tue, 17 Dec 2013 12:53:37 +0100
+
 n4d-ltsp (1.0.1) precise; urgency=high
 
   * Small change to wait until awesome installation scripts will have right permissions

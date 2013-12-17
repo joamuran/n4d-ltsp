@@ -301,7 +301,6 @@ class LtspChroot:
 
 	def run_command_on_chroot(self,chroot_dir,command,XServerIP,screen):
 		# Check if lliurex-ltsp-client version has xscript installed
-		return False
 		try:
 			if (os.path.isfile(chroot_dir+"/usr/sbin/awesome-desktop.sh") and (command!="start_session")):				
 				return self.new_run_command_on_chroot(chroot_dir,command,XServerIP, screen)

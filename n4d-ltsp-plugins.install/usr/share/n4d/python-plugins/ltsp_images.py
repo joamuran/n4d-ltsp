@@ -115,76 +115,42 @@ class LtspImage:
 		print "Performing command: "+command
 		print "Status: "+self.llx_ltsp_status
 		
-		try:	
+
+		try:
+			# Cleaning apt cache from chroot
+			command_orig=command.split(" ")[0]
+			command_param=command.split(" ")[1]
+			if (command_orig=="ltsp-update-image"):
+				output=subprocess.check_output(["chroot", command_param, "apt-get", "clean"])
+
+				
 			# Now prepare the appropiate scripts in server
 			xscript="/tmp/image_script.sh"
 			print "Building file: "+xscript
 			f = open(xscript, 'w')
 			f.write("#/bin/bash\n\n")
-				
+			f.write("export HOME=/root\n")	
 			f.write("export DISPLAY="+XServerIP+display+"\n")
-			#f.write("echo 1\n")
-			#f.write("echo 2\n")
-			f.write("export HOME=/root\n")
-			#f.write("echo 3\n")				
-			#f.write("metacity --display "+XServerIP+display+" &\n")
-			f.write("openbox &\n")
-			#f.write("echo 4\n")
-			f.write("devilspie /var/lib/lliurex-ltsp/templates/devilspie/*  & \n")
-			#f.write("echo 5\n")
-			f.write("setxkbmap es\n")
-			'''
-			# Avoid shuddown
-			f.write("cp /etc/skel/.bashrc /root/.bashrc\n")
-				
-			f.write("echo \"alias shutdown='echo Bad luck, guy!'\" >> /root/.bashrc \n")
-			f.write("echo \"alias halt='echo Bad luck, guy!'\" >> /root/.bashrc \n")
-			f.write("echo \"alias init='echo Bad luck, guy!'\" >> /root/.bashrc \n")
-			f.write("echo \"alias telinit='echo Bad luck, guy!'\" >> /root/.bashrc \n")
-			f.write("echo \"alias zic='echo Bad luck, guy!'\" >> /root/.bashrc \n")
-
-
-			# Writing command
-			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \""+command+";zenity --info --text 'Operation Finished. Click to close.'; killall Xephyr\"\n ")
-			'''
-			#f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" ls;zenity --info --text 'Operation Finished. Click to close.'; kill -9 "+XephyPID+"\"\n ")
-			
-			#f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" ls; \
+			#eval "xterm -geometry 79x27+10+15 -hold -fa 'default' -e 'apt-get update; \
+			#apt-get install lliurex-ltsp-client; \
+			#echo;echo;echo;echo Hem finalitzat.Taqueu la finestra per continuar. ;echo;echo;exit 0'"
+			#f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" "+command+"; \
 			#	zenity --info --text 'Operation Finished. Click to close.'; \
 			#	 n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\"\n")
-			f.write("echo 6\n")
-			f.write("dbus-launch --exit-with-session gnome-terminal -x sh -c \" "+command+"; \
+			#f.write("echo 7\n")
+			f.write("dbus-launch --exit-with-session xterm -geometry 79x27+10+15 -hold -fa 'default' -e \" "+command+"; \
 				zenity --info --text 'Operation Finished. Click to close.'; \
 				 n4d-client -h "+XServerIP+" -c ltspClientXServer -m killXephyr -a "+XephyPID+"\"\n")
-			f.write("echo 7\n")
-			
 			
 			f.write("exit 0\n ")
 			
 			f.close()
 		
-			#subprocess.Popen(["sudo", "chmod","+x", xscript])
-			#output=subprocess.check_output(["sudo", xscript])
 			subprocess.Popen(["chmod","+x", xscript])
 			output=subprocess.check_output(["bash", "/tmp/image_script.sh"])
-			#output=subprocess.check_output(["eval",xscript])
-
+		
 				
-			# yes... dirty code, but runs...
-				
-			# if command was session, we have to unlink /home and /etc
-			#repeat=True
-			#retries=0
-			#output=None
-			#while (repeat==True):
-		#		try:
-		#			output=subprocess.check_output(["chroot",chroot_dir, "/tmp/xscript.sh"])
-		#			repeat=False
-		#		except Exception as e:
-		#			retries=retries+1
-		#			if(retries>10):
-		#				return {'status': False, 'msg':'Max retries exceed'}
-		#		
+		
 		
 			
 						
@@ -379,7 +345,8 @@ class LtspImage:
 				# umount chroot
 				server = ServerProxy("https://127.0.0.1:9779")
 			#	f.write("Umounting devices...\n")
-				server.umount_chroot(connection_user,"LtspChroot", imgchroot)
+				server.force_umount_chroot(connection_user,"LtspChroot", imgchroot)
+				#server.umount_chroot(connection_user,"LtspChroot", imgchroot)
 				# Now delete...
 			#	f.write("Deleting...\n")
 				shutil.rmtree(imgchroot)

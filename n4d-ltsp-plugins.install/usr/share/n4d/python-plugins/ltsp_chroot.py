@@ -300,16 +300,18 @@ class LtspChroot:
 	#def run_command_on_chroot(self,chroot_dir,command,XServerIP,display,XephyPID):
 
 	def run_command_on_chroot(self,chroot_dir,command,XServerIP,screen):
-
 		# Check if lliurex-ltsp-client version has xscript installed
+		return False
 		try:
-			if (os.path.isfile(chroot_dir+"/usr/sbin/xscript.sh") and (command!="start_session")):
+			if (os.path.isfile(chroot_dir+"/usr/sbin/awesome-desktop.sh") and (command!="start_session")):				
 				return self.new_run_command_on_chroot(chroot_dir,command,XServerIP, screen)
 			else:
-				return self.old_run_command_on_chroot(chroot_dir,command,XServerIP, screen)
+				print "[LTSP-run_command_on_chroot] Old client version"
+				return False
+				#return self.old_run_command_on_chroot(chroot_dir,command,XServerIP, screen)
 		except Exception as e:
 			print "EXCEPTION:"+str(e)
-
+		
 
 	def new_run_command_on_chroot(self,chroot_dir,command,XServerIP,screen):
 		'''
@@ -380,7 +382,11 @@ class LtspChroot:
 					while (repeat==True):
 						try:
 							try:
-								output=subprocess.check_output(["chroot",chroot_dir, "bash","/usr/sbin/xscript.sh",command, XServerIP])
+								#output=subprocess.check_output(["chroot",chroot_dir, "bash","/usr/sbin/xscript.sh",command, XServerIP])
+                                                                #output=subprocess.check_output(["chroot", chroot_dir, "/usr/sbin/xscript.sh",command, XServerIP])
+                                                                output=subprocess.check_output(["chroot", chroot_dir, "/usr/sbin/awesome-desktop.sh",command, XServerIP])
+
+
 								print str(output)
 							except Exception as e:	
 								print "EXCEPT:"+str(e)
@@ -763,6 +769,7 @@ class LtspChroot:
 			img_img=static_values[i]["img"]
 			img_file=static_values[i]["image_file"]
 			img_squash=static_values[i]["squashfs_dir"]
+			img_needs_update="False"
 			
 			print "squash: "+img_squash;
 			
@@ -784,6 +791,11 @@ class LtspChroot:
 						img_errorcode=None
 						img_errormsg=None
 						img_errortype=None
+
+						# Check if image needs to be updated because changes into chroot
+						if (os.path.isfile(img_squash+"tmp/.needs_to_be_updated")):
+							img_needs_update="True"
+
 						
 					except Exception as e:
 						img_lliurex_version="unknown"
@@ -846,12 +858,21 @@ class LtspChroot:
 			img={"id": img_id, "name": img_name, "desc":img_desc,
 			   "img": img_img, "image_file": img_file, "squashfs_dir":img_squash,
 			   "installed":img_installed, "lliurex_version":img_lliurex_version,
-			   "errorcode":img_errorcode, "errortype":img_errortype, "errormsg":img_errormsg}
+			   "errorcode":img_errorcode, "errortype":img_errortype, "errormsg":img_errormsg, "img_needs_update":img_needs_update}
 
 			ret.append(img)
 		
 		return {"images": ret}
+
+	def mark_chroot_as_updateable(self, chroot):
+		subprocess.check_output(["touch", chroot+"tmp/.needs_to_be_updated"])
+	
+
+	def unmark_chroot_as_updateable(self, chroot):
+		subprocess.check_output(["rm", chroot+"tmp/.needs_to_be_updated"])
+	
 		
+
 	def import_ltsp_tgz(self, file, chroot):
 		import tarfile
 		try:
@@ -936,6 +957,58 @@ class LtspChroot:
 		subprocess.check_output(["/usr/share/lliurex-ltsp/llx-create-pxelinux.sh"])
 			
 		pass
+
+	def update_awesome_environment(self,chroot_dir, XServerIP, screen):
+		import subprocess
+		import os
+
+		try:	
+		
+			while True:
+				chroot_install_script=chroot_dir+"usr/sbin/llx-awesome-desktop-install.sh"
+				shutil.copyfile("/var/lib/lliurex-ltsp/scripts/llx-awesome-desktop-install.sh", chroot_install_script)
+				subprocess.Popen(["sudo", "chmod","+x", chroot_install_script])
+
+				if (os.access(chroot_install_script, os.X_OK)==True):
+					break
+
+			self.prepare_chroot_for_run(chroot_dir)
+
+
+			output=subprocess.check_output(["chroot",chroot_dir, "/usr/sbin/llx-awesome-desktop-install.sh", XServerIP, screen])
+			print "********************"
+			print output
+			print "********************"
+
+			
+		except Exception as e:
+			print ("[LTSP_CHROOT:run_command_on_chroot] EXCEPTION: "+str(e))
+			self.umount_chroot(chroot_dir[0:len(chroot_dir)-1])
+				
+			output=subprocess.check_output(["echo",str(e), ">>","/tmp/myerr"])
+				
+			if(e.__class__==subprocess.CalledProcessError):
+				return {'status': False, 'msg':' '.join(str(e).split(' ')[-1:])}
+			else:
+					
+				return {'status': False, 'msg':'[N4dChroot] '+str(e)+" EXCEPTION CLASS: "+str(e.__class__)}
+			
+		# At last leave chroot gracefully
+			
+			
+		self.umount_chroot(chroot_dir)
+		return {'status': True, 'msg':'[N4dChroot] Finished with Output: '+str(output)}
+	
+
+
+	#def run_command_on_chroot(self,chroot_dir,command)
+
+	
+	##################
+
+
+	
+
 
 #class LtspChroot
 

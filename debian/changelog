@@ -1,3 +1,17 @@
+n4d-ltsp (1.0.1) precise; urgency=high
+
+  * Small change to wait until awesome installation scripts will have right permissions
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Tue, 17 Dec 2013 10:19:27 +0100
+
+n4d-ltsp (1.0) precise; urgency=high
+
+  * Release 1.0
+  * Enhaced running commands for create and modify images (xterm powered)
+  * Optimized image size by cleaning apt cache before create squashfs
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Mon, 16 Dec 2013 13:51:02 +0100
+
 n4d-ltsp (0.2.15) precise; urgency=low
 
   * Added method to check mounts into chroot.

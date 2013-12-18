@@ -113,6 +113,7 @@ class LtspImage:
 		'''
 		#import time
 		import glob
+		import os
 		print "Performing command: "+command
 		print "Status: "+self.llx_ltsp_status
 		
@@ -148,8 +149,17 @@ class LtspImage:
 			f.write("exit 0\n ")
 			
 			f.close()
+
+
+			while True:
+				subprocess.Popen(["chmod","+x", xscript])
+
+				if (os.access(xscript, os.X_OK)==True):
+					break
+
+
 		
-			subprocess.Popen(["chmod","+x", xscript])
+			
 			output=subprocess.check_output(["bash", "/tmp/image_script.sh"])
 		
 				

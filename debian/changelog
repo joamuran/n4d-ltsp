@@ -1,3 +1,10 @@
+n4d-ltsp (1.0.4) precise; urgency=high
+
+  * Fixed bug in first image creation (white window)
+  * added sudo to chroot umounts
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Wed, 18 Dec 2013 14:34:35 +0100
+
 n4d-ltsp (1.0.3) precise; urgency=low
 
   * Export and import images bugs fixed.

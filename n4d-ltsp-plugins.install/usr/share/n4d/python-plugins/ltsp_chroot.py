@@ -124,18 +124,18 @@ class LtspChroot:
 			
 		else:
 			# Mount /proc
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/proc"])
+			ret=subprocess.check_output(["sudo", "umount","-l",chroot_dir+"/proc"])
 			# Mount /sys
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/sys"])
+			ret=subprocess.check_output(["sudo","umount","-l",chroot_dir+"/sys"])
 			# Mount /dev/pts
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev/pts"])
+			ret=subprocess.check_output(["sudo","umount","-l",chroot_dir+"/dev/pts"])
 			# Mount /dev
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/dev"])
+			ret=subprocess.check_output(["sudo","umount","-l",chroot_dir+"/dev"])
 
 			# Umount /etc
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/etc/hosts"])
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/etc/ld.so.conf.d"])
-			ret=subprocess.check_output(["umount","-l",chroot_dir+"/etc/nsswitch.conf"])
+			ret=subprocess.check_output(["sudo","umount","-l",chroot_dir+"/etc/hosts"])
+			ret=subprocess.check_output(["sudo","umount","-l",chroot_dir+"/etc/ld.so.conf.d"])
+			ret=subprocess.check_output(["sudo","umount","-l",chroot_dir+"/etc/nsswitch.conf"])
 
 			
 			return {'status': True, 'msg':'[N4dChroot] All is umounted'}

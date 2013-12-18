@@ -112,16 +112,19 @@ class LtspImage:
 		runs command in server to work with images
 		'''
 		#import time
+		import glob
 		print "Performing command: "+command
 		print "Status: "+self.llx_ltsp_status
 		
 
 		try:
-			# Cleaning apt cache from chroot
+			# Cleaning apt cache from chroot and jdk files
 			command_orig=command.split(" ")[0]
 			command_param=command.split(" ")[1]
 			if (command_orig=="ltsp-update-image"):
 				output=subprocess.check_output(["chroot", command_param, "apt-get", "clean"])
+				for fl in glob.glob(command_param+"/jdk-*"):
+					os.remove(fl)
 
 				
 			# Now prepare the appropiate scripts in server

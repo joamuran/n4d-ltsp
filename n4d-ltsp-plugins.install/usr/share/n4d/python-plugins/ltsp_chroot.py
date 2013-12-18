@@ -879,7 +879,6 @@ class LtspChroot:
 			f = open(xscript, 'w')
 			f.write("#/bin/bash\n\n")
 			f.write("tar -xvzf "+file+" -C / \n\n")
-			
 			f.write("echo [LTSPChroot] Updating Kernels...\n")
 			f.write("ltsp-update-kernels "+chroot+"\n\n")
 			f.write("echo [LTSPChroot] Generating keys...\n")
@@ -889,13 +888,14 @@ class LtspChroot:
 			f.write("echo [LTSPChroot] Creating Menus\n")
 			f.write("/usr/share/lliurex-ltsp/llx-create-pxelinux.sh\n")
 			
-			f.write('read -p "Finished. Press Enter to close." tralari\n')
+			#f.write('read -p "Finished. Press Enter to close." tralari\n')
+			f.write("echo;echo;echo;echo 'Image Import finished. Close this window to continue :-)';echo;echo;echo;\n\n")
 			f.write("exit 0\n")
 			f.close()
 			
 			# Only in local server!
 			subprocess.check_output(["chmod", "+x", xscript])			
-			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"gnome-terminal", "-e", "/tmp/xscript.sh", "--display", ":42"])
+			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"xterm",  "-geometry",  "79x27+10+15", "-T" ,"Important imatge","-bg", "white", "-fg", "black", "-fa", "'default'", "-e", "/tmp/xscript.sh"])
 			
 			return {"status": "done"}
 		except Exception as ex:
@@ -905,17 +905,29 @@ class LtspChroot:
 	
 	def export_ltsp_tgz(self, file, chroot):
 		import tarfile
+		import os
+		import glob
+			
+
 		try:
 			xscript="/tmp/xscript.sh"
 			f = open(xscript, 'w')
 			f.write("#/bin/bash\n\n")
+			#f.write("export DISPLAY="+display+"\n")
 			f.write("tar -cvzf "+file+".tgz --one-file-system --exclude=/lost+found /opt/ltsp/llx-"+chroot+"\n")
-			f.write('read -p "Finished. Press Enter to close." tralari\n')
+			f.write("echo;echo;echo;echo 'Image Export finished. Close this window to continue :-)';echo;echo;echo;\n\n")
 			f.write("exit 0\n")
 			f.close()
 			
 			subprocess.check_output(["chmod", "+x", xscript])
-			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"gnome-terminal", "-e", "/tmp/xscript.sh", "--display", ":42"])
+
+			# Clean chroot for downloaded packages and jdk
+			output=subprocess.check_output(["chroot", "/opt/ltsp/llx-"+chroot, "apt-get", "clean"])
+			for fl in glob.glob("/opt/ltsp/llx-"+chroot+"/jdk-*"):
+				os.remove(fl)
+
+			#os.system('export DISPLAY='+display)
+			subprocess.check_output(["sudo", "dbus-launch" , "--exit-with-session" ,"xterm",  "-geometry",  "79x27+10+15", "-hold", "-T" ,"Creant fitxer .tar.gz","-bg", "white", "-fg", "black", "-fa", "'default'", "-e", "/tmp/xscript.sh"])
 			
 			return {"status": "done"}
 		except Exception as ex:

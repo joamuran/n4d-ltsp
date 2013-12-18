@@ -1,3 +1,10 @@
+n4d-ltsp (1.0.3) precise; urgency=low
+
+  * Export and import images bugs fixed.
+  * Optimized space in NBD images and tar export/import images.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Wed, 18 Dec 2013 08:54:10 +0100
+
 n4d-ltsp (1.0.2) precise; urgency=high
 
   * debug bug fixed.

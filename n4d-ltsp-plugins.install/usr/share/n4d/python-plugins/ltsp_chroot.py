@@ -872,9 +872,14 @@ class LtspChroot:
 	
 		
 
-	def import_ltsp_tgz(self, file, chroot):
+	def import_ltsp_tgz(self, file, chroot, xauth, display):
 		import tarfile
 		try:
+
+                        # Setting Display
+                        os.environ['XAUTHORITY']=xauth
+                        os.environ['DISPLAY']=display
+
 			xscript="/tmp/xscript.sh"
 			f = open(xscript, 'w')
 			f.write("#/bin/bash\n\n")
@@ -903,13 +908,17 @@ class LtspChroot:
 			
 			return {"status": exc+"*"+ret+"*"}
 	
-	def export_ltsp_tgz(self, file, chroot):
+	def export_ltsp_tgz(self, file, chroot, xauth, display):
 		import tarfile
 		import os
 		import glob
 			
 
 		try:
+                        # Setting Display
+                        os.environ['XAUTHORITY']=xauth
+                        os.environ['DISPLAY']=display
+
 			xscript="/tmp/xscript.sh"
 			f = open(xscript, 'w')
 			f.write("#/bin/bash\n\n")

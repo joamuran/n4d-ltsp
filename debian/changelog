@@ -1,3 +1,9 @@
+n4d-ltsp (1.0.5) precise; urgency=high
+
+  * Setting Xauthority and Display for n4d could be able to display terminal in import and export options.
+
+ -- Jose A. Murcia <joamuran@gmail.com>  Thu, 09 Jan 2014 12:31:16 +0100
+
 n4d-ltsp (1.0.4) precise; urgency=high
 
   * Fixed bug in first image creation (white window)

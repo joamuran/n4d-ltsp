@@ -966,7 +966,9 @@ class LtspChroot:
 		import ast
 		import shutil
 		print "[LTSPChroot] Cleaning tftpboot"
-		#print "Length is "+str(len(imagelist))
+		# Check if imagelist is an empty list and convert in an empty string
+		if (imagelist=="[]"):
+			imagelist=""
 		print imagelist
 
 		for i in imagelist:

@@ -64,6 +64,8 @@ class LtspClientConfig:
     self.client_list=[]
     self.default_session="gnome"
     self.default_type="thin"
+    self.use_nbd="false"
+    self.swap=0
     
     pass    
   #def init
@@ -135,7 +137,25 @@ class LtspClientConfig:
             #print line[:7]
             #print self.current_section+"> "+line
           elif self.current_section=="default":
+            
             # Get Parameters for default section
+            
+            if line[:8]=="NBD_SWAP":
+              self.use_nbd=urllib.quote(line[9:])
+              if (self.use_nbd.lower()=="true"):
+                # Read /etc/ltsp/nbdswap.conf
+                try:
+                  nbd_lines=open('/etc/ltsp/nbdswapd.conf', 'r').readlines()
+                  nbd_line=(nbd_lines[0]).strip()
+                  self.swap=nbd_line[5:]
+                  
+                except Exception as e:
+                  self.swap=0
+              else:
+                self.swap=0
+                
+              #print("[LTSP_CLIENT_CONF:GET_LTSP_CONF] use swap: "+self.use_nbd+" amount: *"+str(swap)+"*")
+              
             if line[:8]=="LTSP_FAT":
               is_fat=urllib.quote(line[15:])
               #self.default_type=urllib.quote(line[15:])
@@ -171,7 +191,7 @@ class LtspClientConfig:
       self.client_list.append(self.current_client)
   
     '{"default_type":"fat", "default_session":"gnome"}'
-    config='{"default_type":"'+self.default_type+'", "default_session":"'+self.default_session+'",'
+    config='{"default_type":"'+self.default_type+'", "default_session":"'+self.default_session+'","nbd_swap":"'+self.use_nbd+'", "size":"'+str(self.swap)+'",'
     config=config+'"clients":['
     index=0
     for cl in self.client_list:
@@ -186,7 +206,7 @@ class LtspClientConfig:
     return config 
     
   
-  def set_ltsp_conf(self, config, class_type, class_session):
+  def set_ltsp_conf(self, config, class_type, class_session, use_nbd_swap, nbd_swap_size):
     print "Going to save..."+config
     self.new_conf_file="/var/lib/tftpboot/ltsp/i386/lts.conf"
     self.template_file="/var/lib/lliurex-ltsp/templates/lts.conf"
@@ -206,6 +226,21 @@ class LtspClientConfig:
       writefile.write("\nLTSP_FATCLIENT=true")
     else:
       writefile.write("\nLTSP_FATCLIENT=false")
+    
+    print ("SWAP: "+use_nbd_swap+"-"+nbd_swap_size)
+    
+    writefile.write("\n# Using NBD swap")
+    if(use_nbd_swap=="True"):
+      writefile.write("\nNBD_SWAP=True")
+      print("111")
+      swapfile=open("/etc/ltsp/nbdswapd.conf", 'w')
+      print("222")
+      swapfile.write("SIZE="+nbd_swap_size)
+      print("333")
+      swapfile.close()
+      
+    else:
+      writefile.write("\nNBD_SWAP=False")
     
 
 

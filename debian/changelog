@@ -1,8 +1,14 @@
+n4d-ltsp (1.0.7) precise; urgency=low
+
+  * Added use of NBD Swap capabilities
+
+ -- joamuran <joamuran@gmail.com>  Tue, 28 Jan 2014 11:19:48 +0100
+
 n4d-ltsp (1.0.6) precise; urgency=low
 
   * Fixed bug in clean_tftpboot function to regenerate menu when there are no errors in images.
 
- -- Jose A. Murcia <joamurangmail.com>  Tue, 14 Jan 2014 10:21:52 +0100
+ -- Jose A. Murcia <joamuran@gmail.com>  Tue, 14 Jan 2014 10:21:52 +0100
 
 n4d-ltsp (1.0.5) precise; urgency=high
 
